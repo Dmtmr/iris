@@ -17,12 +17,12 @@ function App() {
   function createTodo() {
     client.models.Todo.create({ content: window.prompt("Todo content") });
   }
-  
+    
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id });
-  }
+    }
   
-
+  
   return (
     <div className="app-container">
       {/* Left Sidebar */}
@@ -50,89 +50,95 @@ function App() {
         </nav>
       </div>
 
-      {/* Center Panel */}
-      <div className="center-panel">
-        <div className="client-conversations">
-          <div className="section-header">
-            <div className="tabs">
-              <div className="tab active">Client</div>
-              <div className="tab">Team</div>
+      {/* Resizable Panel Group */}
+      <div className="resizable-panel-group">
+        {/* Center Panel */}
+        <div className="resizable-panel center-panel">
+          <div className="client-conversations">
+            <div className="section-header">
+              <div className="tabs">
+                <div className="tab active">Client</div>
+                <div className="tab">Team</div>
+              </div>
+              <h2>Client conversations</h2>
             </div>
-            <h2>Client conversations</h2>
+            <div className="conversation-list">
+              <div className="conversation-item active">
+                <div className="avatar">👥</div>
+                <div className="conversation-info">
+                  <div className="name">James - Restaurant Ltd</div>
+                  <div className="last-message">I sent the receipt.</div>
+                  <div className="timestamp">Today, 9:52pm</div>
+                </div>
+                <div className="message-icons">
+                  <span className="icon">💬</span>
+                  <span className="icon badge">📧4</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="conversation-list">
-            <div className="conversation-item active">
-              <div className="avatar">👥</div>
-              <div className="conversation-info">
-                <div className="name">James - Restaurant Ltd</div>
-                <div className="last-message">I sent the receipt.</div>
-                <div className="timestamp">Today, 9:52pm</div>
+
+          <div className="assistant-section">
+            <div className="section-header">
+              <div className="tabs">
+                <div className="tab active">Assistant</div>
+                <div className="tab badge">Active tasks 1</div>
               </div>
-              <div className="message-icons">
-                <span className="icon">💬</span>
-                <span className="icon badge">📧4</span>
-              </div>
+              <h2>Query anything</h2>
+            </div>
+            <div className="assistant-input">
+              <input type="text" placeholder="Ask away..." />
+              <div className="user-avatar">DM</div>
             </div>
           </div>
         </div>
 
-        <div className="assistant-section">
-          <div className="section-header">
-            <div className="tabs">
-              <div className="tab active">Assistant</div>
-              <div className="tab badge">Active tasks 1</div>
+        {/* Resizable Handle */}
+        <div className="resizable-handle"></div>
+
+        {/* Right Panel */}
+        <div className="resizable-panel right-panel">
+          <div className="chat-header">
+            <div className="contact-info">
+              <div className="avatar">👥</div>
+              <span>James - Restaurant Ltd</span>
             </div>
-            <h2>Query anything</h2>
-          </div>
-          <div className="assistant-input">
-            <input type="text" placeholder="Ask away..." />
+            <div className="chat-actions">
+              <span className="icon">📞</span>
+              <span className="icon">📹</span>
+              <span className="icon">⋯</span>
+            </div>
             <div className="user-avatar">DM</div>
           </div>
-        </div>
-      </div>
-
-      {/* Right Panel */}
-      <div className="right-panel">
-        <div className="chat-header">
-          <div className="contact-info">
-            <div className="avatar">👥</div>
-            <span>James - Restaurant Ltd</span>
-          </div>
-          <div className="chat-actions">
-            <span className="icon">📞</span>
-            <span className="icon">📹</span>
-            <span className="icon">⋯</span>
-          </div>
-          <div className="user-avatar">DM</div>
-        </div>
-        
-        <div className="chat-messages">
-          <div className="message incoming">
-            <div className="message-content">Hey There!</div>
-            <div className="message-meta">
-              <span className="icon">💬</span>
-              <span className="time">Yesterday, 8:30pm</span>
+          
+          <div className="chat-messages">
+            <div className="message incoming">
+              <div className="message-content">Hey There!</div>
+              <div className="message-meta">
+                <span className="icon">💬</span>
+                <span className="time">Yesterday, 8:30pm</span>
+              </div>
+            </div>
+            <div className="message outgoing">
+              <div className="message-content">Hello! what do you need James?</div>
+              <div className="message-meta">
+                <span className="icon">💬</span>
+                <span className="time">Yesterday, 8:34pm</span>
+              </div>
             </div>
           </div>
-          <div className="message outgoing">
-            <div className="message-content">Hello! what do you need James?</div>
-            <div className="message-meta">
-              <span className="icon">💬</span>
-              <span className="time">Yesterday, 8:34pm</span>
+
+          <div className="chat-input">
+            <input type="text" placeholder="Sent a message" />
+            <div className="input-actions">
+              <span className="icon">📎</span>
+              <span className="icon">😊</span>
+              <span className="icon">✈️</span>
             </div>
           </div>
         </div>
-
-        <div className="chat-input">
-          <input type="text" placeholder="Sent a message" />
-          <div className="input-actions">
-            <span className="icon">📎</span>
-            <span className="icon">😊</span>
-            <span className="icon">✈️</span>
-          </div>
-        </div>
       </div>
-    </div>
+      </div>
   );
 }
 
