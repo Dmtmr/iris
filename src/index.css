@@ -430,6 +430,12 @@ a {
   gap: 10px;
 }
 
+/* Query section message input - match chat panel height */
+.query-section-full .message-input-container {
+  margin: 0 -20px -20px -20px;
+  padding: 15px 20px;
+}
+
 .message-input {
   flex: 1;
   padding: 10px 15px;
