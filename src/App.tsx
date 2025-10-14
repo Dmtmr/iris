@@ -44,24 +44,20 @@ function App() {
             {sidebarCollapsed ? '»' : '«'}
           </button>
         </div>
-        <nav className="sidebar-nav">
-          <a href="#" className="nav-item">
-            <span>🏠</span>
-            {!sidebarCollapsed && <span>Home</span>}
-          </a>
-          <a href="#" className="nav-item active">
-            <span>💬</span>
-            {!sidebarCollapsed && <span>AI Assistant</span>}
-          </a>
-          <a href="#" className="nav-item">
-            <span>📊</span>
-            {!sidebarCollapsed && <span>Data hub</span>}
-          </a>
-          <a href="#" className="nav-item">
-            <span>⚙️</span>
-            {!sidebarCollapsed && <span>AI Workflows</span>}
-          </a>
-        </nav>
+            <nav className="sidebar-nav">
+              <a href="#" className="nav-item active">
+                <span>💬</span>
+                {!sidebarCollapsed && <span>AI Assistant</span>}
+              </a>
+              <a href="#" className="nav-item">
+                <span>📊</span>
+                {!sidebarCollapsed && <span>Data hub</span>}
+              </a>
+              <a href="#" className="nav-item">
+                <span>⚙️</span>
+                {!sidebarCollapsed && <span>AI Workflows</span>}
+              </a>
+            </nav>
       </div>
 
       {/* Main Content */}
