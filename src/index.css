@@ -1,10 +1,10 @@
-body {
+html, body {
   margin: 0;
   background: #F4FBFB;
   display: flex;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   overflow-x: hidden;
 }
 
