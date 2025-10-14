@@ -335,9 +335,9 @@ a {
   justify-content: center;
 }
 
-/* Query Section - Full Width */
+/* Query Section - Same Width as Before */
 .query-section-full {
-  width: 100%;
+  width: 420px;
   padding: 20px;
   background: white;
   border-right: 1px solid #e0e0e0;
