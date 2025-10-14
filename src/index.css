@@ -341,6 +341,9 @@ a {
   padding: 20px;
   background: white;
   border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .query-tabs {
@@ -373,12 +376,19 @@ a {
 }
 
 .query-input-wrapper {
-  display: flex;t
+  display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px;
   background: #f9f9f9;
   border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.query-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .query-icon {

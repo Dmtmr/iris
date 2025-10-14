@@ -20,7 +20,7 @@ function App() {
   function createTodo() {
     client.models.Todo.create({ content: window.prompt("Todo content") });
   }
-  
+    
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id });
   }
@@ -91,11 +91,13 @@ function App() {
 
             {activeTab === 'assistant' ? (
               <>
-                <div className="query-header">Query anything</div>
-                <div className="query-input-wrapper">
-                  <div className="query-icon">🔍</div>
-                  <input type="text" className="query-input" placeholder="Ask away..." />
-                  <div className="query-avatar">DM</div>
+                <div className="query-content">
+                  <div className="query-header">Query anything</div>
+                  <div className="query-input-wrapper">
+                    <div className="query-icon">🔍</div>
+                    <input type="text" className="query-input" placeholder="Ask away..." />
+                    <div className="query-avatar">DM</div>
+                  </div>
                 </div>
                 <div className="message-input-container">
                   <input type="text" className="message-input" placeholder="Send a message" />
@@ -104,31 +106,33 @@ function App() {
               </>
             ) : (
               <>
-                <div className="query-header">Active Tasks</div>
-                <div className="tasks-list">
-                  <div className="task-item">
-                    <div className="task-icon">📋</div>
-                    <div className="task-content">
-                      <div className="task-title">Review Q4 Reports</div>
-                      <div className="task-time">Due: Tomorrow</div>
+                <div className="query-content">
+                  <div className="query-header">Active Tasks</div>
+                  <div className="tasks-list">
+                    <div className="task-item">
+                      <div className="task-icon">📋</div>
+                      <div className="task-content">
+                        <div className="task-title">Review Q4 Reports</div>
+                        <div className="task-time">Due: Tomorrow</div>
+                      </div>
+                      <div className="task-status">In Progress</div>
                     </div>
-                    <div className="task-status">In Progress</div>
-                  </div>
-                  <div className="task-item">
-                    <div className="task-icon">📊</div>
-                    <div className="task-content">
-                      <div className="task-title">Update Client Database</div>
-                      <div className="task-time">Due: Friday</div>
+                    <div className="task-item">
+                      <div className="task-icon">📊</div>
+                      <div className="task-content">
+                        <div className="task-title">Update Client Database</div>
+                        <div className="task-time">Due: Friday</div>
+                      </div>
+                      <div className="task-status">Pending</div>
                     </div>
-                    <div className="task-status">Pending</div>
-                  </div>
-                  <div className="task-item">
-                    <div className="task-icon">💼</div>
-                    <div className="task-content">
-                      <div className="task-title">Prepare Meeting Notes</div>
-                      <div className="task-time">Due: Today</div>
+                    <div className="task-item">
+                      <div className="task-icon">💼</div>
+                      <div className="task-content">
+                        <div className="task-title">Prepare Meeting Notes</div>
+                        <div className="task-time">Due: Today</div>
+                      </div>
+                      <div className="task-status">Urgent</div>
                     </div>
-                    <div className="task-status">Urgent</div>
                   </div>
                 </div>
               </>
@@ -200,7 +204,7 @@ function App() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
