@@ -147,8 +147,6 @@ function App() {
                 <div className="chat-title">James - Restaurant Ltd</div>
               </div>
               <div className="chat-actions">
-                <button className="chat-action-btn">📞</button>
-                <button className="chat-action-btn">🎥</button>
                 <button className="chat-action-btn">⋮</button>
               </div>
             </div>
