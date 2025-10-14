@@ -5,20 +5,37 @@ body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   height: 100vh;
   width: 100vw;
+}
+
+/* Main app container fills the full screen */
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  background-color: #EEECE1 !important;
+  padding: 20px !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Optional: content sections inside main */
+section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-main {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  background-color: #EEECE1 !important;
-  padding: 20px !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-  min-width: 400px;
-  max-width: 600px;
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  main {
+    padding: 10px !important;
+  }
 }
 
 button {
