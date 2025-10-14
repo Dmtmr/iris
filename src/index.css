@@ -430,6 +430,16 @@ a {
   gap: 10px;
 }
 
+.message-input-container .send-btn:not(:last-child) {
+  margin-right: 5px;
+}
+
+.send-buttons-group {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
 /* Query section message input - match chat panel height */
 .query-section-full .message-input-container {
   margin: 0 -20px -20px -20px;
@@ -438,10 +448,22 @@ a {
 
 .message-input {
   flex: 1;
-  padding: 10px 15px;
+  padding: 10px 15px 10px 40px;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   font-size: 14px;
+  position: relative;
+}
+
+.message-input::before {
+  content: "📎";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 16px;
+  color: #666;
 }
 
 .message-input:focus {

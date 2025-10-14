@@ -194,10 +194,11 @@ function App() {
             </div>
 
             <div className="message-input-container">
-              <button className="send-btn" style={{color: '#666'}}>📎</button>
               <input type="text" className="message-input" placeholder="Send a message" />
-              <button className="send-btn">😊</button>
-              <button className="send-btn">➤</button>
+              <div className="send-buttons-group">
+                <button className="send-btn">😊</button>
+                <button className="send-btn">➤</button>
+              </div>
             </div>
           </div>
         </div>
