@@ -8,7 +8,6 @@ const client = generateClient<Schema>();
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assistant' | 'tasks'>('assistant');
   const [activeTab, setActiveTab] = useState<'assistant' | 'tasks' | 'chats'>('assistant');
   const { signOut } = useAuthenticator();
   
@@ -30,7 +29,6 @@ function App() {
     setSidebarCollapsed(!sidebarCollapsed);
   }
 
-  function handleTabChange(tab: 'assistant' | 'tasks') {
   function handleTabChange(tab: 'assistant' | 'tasks' | 'chats') {
     setActiveTab(tab);
   }
@@ -239,7 +237,6 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
       </div>
   );
 }
