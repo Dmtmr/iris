@@ -9,6 +9,7 @@ function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<'assistant' | 'tasks'>('assistant');
+  const [activeTab, setActiveTab] = useState<'assistant' | 'tasks' | 'chats'>('assistant');
   const { signOut } = useAuthenticator();
   
   useEffect(() => {
@@ -30,6 +31,7 @@ function App() {
   }
 
   function handleTabChange(tab: 'assistant' | 'tasks') {
+  function handleTabChange(tab: 'assistant' | 'tasks' | 'chats') {
     setActiveTab(tab);
   }
   
@@ -83,6 +85,12 @@ function App() {
               >
                 Active tasks <span style={{background:'#333',color:'white',borderRadius:'50%',padding:'2px 6px',fontSize:'11px',marginLeft:'4px'}}>4</span>
               </button>
+              <button 
+                className={`query-tab ${activeTab === 'chats' ? 'active' : ''}`}
+                onClick={() => handleTabChange('chats')}
+              >
+                Client conversations
+              </button>
             </div>
 
             {activeTab === 'assistant' ? (
@@ -100,7 +108,7 @@ function App() {
                   <button className="send-btn">➤</button>
                 </div>
               </>
-            ) : (
+            ) : activeTab === 'tasks' ? (
               <>
                 <div className="query-content">
                   <div className="query-header">Active Tasks</div>
@@ -128,6 +136,38 @@ function App() {
                         <div className="task-time">Due: Today</div>
                       </div>
                       <div className="task-status">Urgent</div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="query-content">
+                  <div className="query-header">Client conversations</div>
+                  <div className="chats-list">
+                    <div className="chat-item">
+                      <div className="chat-avatar">🍽️</div>
+                      <div className="chat-details">
+                        <div className="chat-name">James - Restaurant Ltd</div>
+                        <div className="chat-preview">I sent the receipt</div>
+                      </div>
+                      <div className="chat-time">9:52pm</div>
+                    </div>
+                    <div className="chat-item">
+                      <div className="chat-avatar" style={{background: '#4285f4'}}>👤</div>
+                      <div className="chat-details">
+                        <div className="chat-name">Marian</div>
+                        <div className="chat-preview">Can I get QBS for the NewCo?</div>
+                      </div>
+                      <div className="chat-time">12:31pm</div>
+                    </div>
+                    <div className="chat-item">
+                      <div className="chat-avatar" style={{background: '#34a853'}}>🚗</div>
+                      <div className="chat-details">
+                        <div className="chat-name">Jesse</div>
+                        <div className="chat-preview">K1 sent!</div>
+                      </div>
+                      <div className="chat-time">9:12am</div>
                     </div>
                   </div>
                 </div>
