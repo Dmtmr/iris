@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         Header() {
           return (
             <div style={{ textAlign: 'center', padding: '20px' }}>
-              <h1 style={{ color: '#9C0F00', margin: '0 0 10px 0', fontFamily: 'Inder, sans-serif' }}>Wlcome to Iris</h1>
+              <h1 style={{ color: '#9C0F00', margin: '0 0 10px 0', fontFamily: 'Inder, sans-serif' }}>Welcome to Iris</h1>
               <p style={{ color: '#666', margin: '0', fontFamily: 'Inder, sans-serif' }}>Iris Demo</p>
             </div>
           );
