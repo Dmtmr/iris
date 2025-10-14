@@ -8,6 +8,7 @@ const client = generateClient<Schema>();
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState<'assistant' | 'tasks'>('assistant');
   const { signOut } = useAuthenticator();
   
   useEffect(() => {
@@ -26,6 +27,10 @@ function App() {
 
   function toggleSidebar() {
     setSidebarCollapsed(!sidebarCollapsed);
+  }
+
+  function handleTabChange(tab: 'assistant' | 'tasks') {
+    setActiveTab(tab);
   }
   
   
@@ -70,22 +75,64 @@ function App() {
           {/* Query Section - Now Full Width */}
           <div className="query-section-full">
             <div className="query-tabs">
-              <button className="query-tab active">Assistant</button>
-              <button className="query-tab">Active tasks <span style={{background:'#333',color:'white',borderRadius:'50%',padding:'2px 6px',fontSize:'11px',marginLeft:'4px'}}>4</span></button>
+              <button 
+                className={`query-tab ${activeTab === 'assistant' ? 'active' : ''}`}
+                onClick={() => handleTabChange('assistant')}
+              >
+                Assistant
+              </button>
+              <button 
+                className={`query-tab ${activeTab === 'tasks' ? 'active' : ''}`}
+                onClick={() => handleTabChange('tasks')}
+              >
+                Active tasks <span style={{background:'#333',color:'white',borderRadius:'50%',padding:'2px 6px',fontSize:'11px',marginLeft:'4px'}}>4</span>
+              </button>
             </div>
 
-            <div className="query-header">Query anything</div>
-
-            <div className="query-input-wrapper">
-              <div className="query-icon">🔍</div>
-              <input type="text" className="query-input" placeholder="Ask away..." />
-              <div className="query-avatar">DM</div>
-            </div>
-
-            <div className="message-input-container">
-              <input type="text" className="message-input" placeholder="Send a message" />
-              <button className="send-btn">➤</button>
-            </div>
+            {activeTab === 'assistant' ? (
+              <>
+                <div className="query-header">Query anything</div>
+                <div className="query-input-wrapper">
+                  <div className="query-icon">🔍</div>
+                  <input type="text" className="query-input" placeholder="Ask away..." />
+                  <div className="query-avatar">DM</div>
+                </div>
+                <div className="message-input-container">
+                  <input type="text" className="message-input" placeholder="Send a message" />
+                  <button className="send-btn">➤</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="query-header">Active Tasks</div>
+                <div className="tasks-list">
+                  <div className="task-item">
+                    <div className="task-icon">📋</div>
+                    <div className="task-content">
+                      <div className="task-title">Review Q4 Reports</div>
+                      <div className="task-time">Due: Tomorrow</div>
+                    </div>
+                    <div className="task-status">In Progress</div>
+                  </div>
+                  <div className="task-item">
+                    <div className="task-icon">📊</div>
+                    <div className="task-content">
+                      <div className="task-title">Update Client Database</div>
+                      <div className="task-time">Due: Friday</div>
+                    </div>
+                    <div className="task-status">Pending</div>
+                  </div>
+                  <div className="task-item">
+                    <div className="task-icon">💼</div>
+                    <div className="task-content">
+                      <div className="task-title">Prepare Meeting Notes</div>
+                      <div className="task-time">Due: Today</div>
+                    </div>
+                    <div className="task-status">Urgent</div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Chat Panel */}
