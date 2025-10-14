@@ -511,7 +511,7 @@ a {
 .messages-container {
   flex: 1;
   overflow-y: auto;
-  padding: 30px;
+  padding: 20px 15px;
 }
 
 .message {
