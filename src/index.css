@@ -69,3 +69,19 @@ a {
   font-weight: 800;
   text-decoration: none;
 }
+
+/* Custom styling for Amplify Authenticator buttons */
+[data-amplify-authenticator] button:hover {
+  background-color: #EEECE1 !important;
+  border-color: #EEECE1 !important;
+}
+
+[data-amplify-authenticator] button:focus {
+  background-color: #EEECE1 !important;
+  border-color: #EEECE1 !important;
+}
+
+[data-amplify-authenticator] button:active {
+  background-color: #EEECE1 !important;
+  border-color: #EEECE1 !important;
+}
