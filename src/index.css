@@ -1,43 +1,10 @@
 html, body {
   margin: 0;
-  background: #F4FBFB;
-  display: flex;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  padding: 0;
   height: 100%;
   width: 100%;
-  overflow-x: hidden;
-}
-
-/* Main app container fills the full screen */
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  background-color: #EEECE1 !important;
-  padding: 20px !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
   overflow: hidden;
-}
-
-/* Optional: content sections inside main */
-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-  main {
-    padding: 10px !important;
-  }
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 button {
@@ -113,10 +80,11 @@ a {
 }
 
 .app-container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   display: flex;
   height: 100vh;
+  width: 100vw;
   background: #f5f5f5;
+  overflow: hidden;
 }
 
 /* Sidebar */
