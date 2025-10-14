@@ -5,6 +5,7 @@ body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   height: 100vh;
   width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Main app container fills the full screen */
@@ -20,6 +21,7 @@ main {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Optional: content sections inside main */
