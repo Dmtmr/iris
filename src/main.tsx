@@ -21,14 +21,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           return (
             <div style={{ textAlign: 'center', padding: '20px' }}>
               <h1 style={{ color: '#333', margin: '0 0 10px 0' }}>Welcome to Iris</h1>
-              <p style={{ color: '#666', margin: '0' }}>Your Personal Todo Manager</p>
+              <p style={{ color: '#666', margin: '0' }}>Iris Demo</p>
             </div>
           );
         },
         Footer() {
           return (
             <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
-              <p>© 2024 Iris Todo App</p>
+              <p>© 2024 Iris Demo App</p>
             </div>
           );
         }
