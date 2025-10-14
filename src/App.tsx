@@ -67,86 +67,24 @@ function App() {
         </div>
 
         <div className="content-wrapper">
-          {/* Conversations Panel */}
-          <div className="conversations-panel">
-            <div className="tabs">
-              <button className="tab active">Client</button>
-              <button className="tab">Team</button>
+          {/* Query Section - Now Full Width */}
+          <div className="query-section-full">
+            <div className="query-tabs">
+              <button className="query-tab active">Assistant</button>
+              <button className="query-tab">Active tasks <span style={{background:'#333',color:'white',borderRadius:'50%',padding:'2px 6px',fontSize:'11px',marginLeft:'4px'}}>4</span></button>
             </div>
 
-            <div className="conversations-header">
-              <h3>Client conversations</h3>
+            <div className="query-header">Query anything</div>
+
+            <div className="query-input-wrapper">
+              <div className="query-icon">🔍</div>
+              <input type="text" className="query-input" placeholder="Ask away..." />
+              <div className="query-avatar">DM</div>
             </div>
 
-            <div className="conversation-list">
-              <div className="conversation-item active">
-                <div className="conversation-avatar">🍽️</div>
-                <div className="conversation-details">
-                  <div className="conversation-header">
-                    <span className="conversation-name">James - Restaurant Ltd</span>
-                    <span className="conversation-time">Today, 9:52pm</span>
-                  </div>
-                  <div className="conversation-preview">
-                    I sent the receipt
-                    <div className="conversation-icons">
-                      <span className="icon-badge">📱</span>
-                      <span className="icon-badge">📧</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="conversation-item">
-                <div className="conversation-avatar" style={{background: '#4285f4'}}>👤</div>
-                <div className="conversation-details">
-                  <div className="conversation-header">
-                    <span className="conversation-name">Marian</span>
-                    <span className="conversation-time">Yesterday, 12:31pm</span>
-                  </div>
-                  <div className="conversation-preview">
-                    Can I get QBS for the NewCo?
-                    <div className="conversation-icons">
-                      <span className="icon-badge">📧</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="conversation-item">
-                <div className="conversation-avatar" style={{background: '#34a853'}}>🚗</div>
-                <div className="conversation-details">
-                  <div className="conversation-header">
-                    <span className="conversation-name">Jesse</span>
-                    <span className="conversation-time">Wednesday, 9:12am</span>
-                  </div>
-                  <div className="conversation-preview">
-                    K1 sent!
-                    <div className="conversation-icons">
-                      <span className="icon-badge">📱</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="query-section">
-              <div className="query-tabs">
-                <button className="query-tab active">Assistant</button>
-                <button className="query-tab">Active tasks <span style={{background:'#333',color:'white',borderRadius:'50%',padding:'2px 6px',fontSize:'11px',marginLeft:'4px'}}>4</span></button>
-              </div>
-
-              <div className="query-header">Query anything</div>
-
-              <div className="query-input-wrapper">
-                <div className="query-icon">🔍</div>
-                <input type="text" className="query-input" placeholder="Ask away..." />
-                <div className="query-avatar">DM</div>
-              </div>
-
-              <div className="message-input-container">
-                <input type="text" className="message-input" placeholder="Send a message" />
-                <button className="send-btn">➤</button>
-              </div>
+            <div className="message-input-container">
+              <input type="text" className="message-input" placeholder="Send a message" />
+              <button className="send-btn">➤</button>
             </div>
           </div>
 

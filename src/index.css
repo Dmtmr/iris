@@ -335,10 +335,12 @@ a {
   justify-content: center;
 }
 
-/* Query Section */
-.query-section {
-  border-top: 1px solid #e0e0e0;
+/* Query Section - Full Width */
+.query-section-full {
+  width: 100%;
   padding: 20px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
 }
 
 .query-tabs {
