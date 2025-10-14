@@ -194,11 +194,12 @@ function App() {
             </div>
 
             <div className="message-input-container">
-              <input type="text" className="message-input" placeholder="Send a message" />
-              <div className="send-buttons-group">
-                <button className="send-btn">😊</button>
-                <button className="send-btn">➤</button>
+              <div className="input-with-attachment">
+                <span className="attachment-icon-inline">📎</span>
+                <input type="text" className="message-input" placeholder="Send a message" />
               </div>
+              <button className="send-btn">😊</button>
+              <button className="send-btn">➤</button>
             </div>
           </div>
         </div>
