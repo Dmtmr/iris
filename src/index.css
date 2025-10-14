@@ -107,6 +107,11 @@ a {
   border-right: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 60px;
 }
 
 .sidebar-header {
@@ -115,12 +120,25 @@ a {
   align-items: center;
   gap: 10px;
   border-bottom: 1px solid #e0e0e0;
+  transition: padding 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header {
+  padding: 20px 10px;
+  justify-content: center;
 }
 
 .sidebar-header h1 {
   font-size: 24px;
   font-weight: 600;
   color: #333;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header h1 {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
 }
 
 .collapse-btn {
@@ -130,6 +148,11 @@ a {
   font-size: 20px;
   cursor: pointer;
   color: #666;
+  transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed .collapse-btn {
+  margin-left: 0;
 }
 
 .sidebar-nav {
@@ -144,7 +167,12 @@ a {
   color: #666;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, padding 0.3s ease;
+}
+
+.sidebar.collapsed .nav-item {
+  padding: 12px;
+  justify-content: center;
 }
 
 .nav-item:hover {
@@ -356,7 +384,7 @@ a {
 }
 
 .query-input-wrapper {
-  display: flex;
+  display: flex;t
   align-items: center;
   gap: 10px;
   padding: 12px;

@@ -7,7 +7,9 @@ const client = generateClient<Schema>();
 
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { signOut } = useAuthenticator();
+  
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
@@ -17,36 +19,42 @@ function App() {
   function createTodo() {
     client.models.Todo.create({ content: window.prompt("Todo content") });
   }
-    
+  
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id });
-    }
+  }
+
+  function toggleSidebar() {
+    setSidebarCollapsed(!sidebarCollapsed);
+  }
   
   
   return (
     <div className="app-container">
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
           <h1>Iris</h1>
-          <button className="collapse-btn">«</button>
+          <button className="collapse-btn" onClick={toggleSidebar}>
+            {sidebarCollapsed ? '»' : '«'}
+          </button>
         </div>
         <nav className="sidebar-nav">
           <a href="#" className="nav-item">
             <span>🏠</span>
-            <span>Home</span>
+            {!sidebarCollapsed && <span>Home</span>}
           </a>
           <a href="#" className="nav-item active">
             <span>💬</span>
-            <span>AI Assistant</span>
+            {!sidebarCollapsed && <span>AI Assistant</span>}
           </a>
           <a href="#" className="nav-item">
             <span>📊</span>
-            <span>Data hub</span>
+            {!sidebarCollapsed && <span>Data hub</span>}
           </a>
           <a href="#" className="nav-item">
             <span>⚙️</span>
-            <span>AI Workflows</span>
+            {!sidebarCollapsed && <span>AI Workflows</span>}
           </a>
         </nav>
       </div>
