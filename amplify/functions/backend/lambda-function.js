@@ -1,4 +1,4 @@
-import { processRequest } from "./backendLogic.js";
+import { processRequest } from "./backend-logic.js";
 
 export async function handler(event) {
   console.log("Received event:", event);
