@@ -87,8 +87,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         }
       }}
     >
-      {({ signOut, user }) => (
-        user ? <App /> : null
+      {({ user }) => (
+        user ? <App /> : <div>Loading...</div>
       )}
     </Authenticator>
   </React.StrictMode>
