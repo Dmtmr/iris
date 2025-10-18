@@ -1,4 +1,4 @@
-export async function handler(event) {
+export async function handler(event: any) {
   console.log("Received event:", event);
 
   return {
