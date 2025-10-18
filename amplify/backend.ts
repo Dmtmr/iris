@@ -6,7 +6,7 @@ import { defineFunction } from '@aws-amplify/backend';
 // Define the JavaScript Lambda
 const backendLambda = defineFunction({
   name: 'backend',
-  entry: './amplify/functions/backend/lambda-function.js',
+  entry: './amplify/functions/backend',
 });
 
 // Export backend
