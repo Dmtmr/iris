@@ -1,13 +1,69 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Authenticator } from '@aws-amplify/ui-react';
+import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import App from "./App.tsx";
 import "./index.css";
-import '@aws-amplify/ui-react/styles.css';
+import "./login.css";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
 
 Amplify.configure(outputs);
+
+function LoginHeader() {
+  const { toSignUp } = useAuthenticator();
+  
+  return (
+    <div style={{ 
+      position: 'absolute', 
+      top: '24px', 
+      right: '24px', 
+      zIndex: 100 
+    }}>
+      <button
+        onClick={toSignUp}
+        style={{
+          background: 'none',
+          border: 'none',
+          fontWeight: 600,
+          color: '#333',
+          cursor: 'pointer',
+          fontSize: '14px',
+          padding: 0
+        }}
+      >
+        Create An Account
+      </button>
+    </div>
+  );
+}
+
+function SignUpHeader() {
+  const { toSignIn } = useAuthenticator();
+  
+  return (
+    <div style={{ 
+      position: 'absolute', 
+      top: '24px', 
+      right: '24px', 
+      zIndex: 100 
+    }}>
+      <button
+        onClick={toSignIn}
+        style={{
+          background: 'none',
+          border: 'none',
+          fontWeight: 600,
+          color: '#333',
+          cursor: 'pointer',
+          fontSize: '14px',
+          padding: 0
+        }}
+      >
+        Back to Login
+      </button>
+    </div>
+  );
+}
 
 ReactDOM.createRoot(document.getElementById("root")!).render(   
   <React.StrictMode>
@@ -17,24 +73,23 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       socialProviders={[]}
       hideSignUp={false}
       components={{
-        Header() {
-          return (
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <h1 style={{ color: '#474C55', margin: '0 0 10px 0', fontFamily: 'Inder, sans-serif' }}>Welcome to Iris</h1>
-              <p style={{ color: '#666', margin: '0', fontFamily: 'Inder, sans-serif' }}>Iris Demo</p>
-            </div>
-          );
+        SignIn: {
+          Header: LoginHeader,
+          Footer() {
+            return null;
+          }
         },
-        Footer() {
-          return (
-            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
-              <p>© 2024 Iris Demo App</p>
-            </div>
-          );
+        SignUp: {
+          Header: SignUpHeader,
+          Footer() {
+            return null;
+          }
         }
       }}
     >
-      <App />
+      {({ signOut, user }) => (
+        user ? <App /> : null
+      )}
     </Authenticator>
   </React.StrictMode>
 );

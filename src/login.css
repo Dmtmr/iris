@@ -1,0 +1,310 @@
+/* Iris Core Login Styling - Exact Match */
+
+/* Main Container - Full Screen Split Layout */
+[data-amplify-authenticator] {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: white;
+  --amplify-colors-background-primary: white;
+  --amplify-colors-background-secondary: white;
+  --amplify-colors-brand-primary-10: #18181b;
+  --amplify-colors-brand-primary-80: #18181b;
+  --amplify-colors-brand-primary-90: #27272a;
+  --amplify-colors-brand-primary-100: #18181b;
+  --amplify-components-button-primary-background-color: #18181b;
+  --amplify-components-button-primary-hover-background-color: #27272a;
+}
+
+/* Left Sidebar - 50% with Light Blue Background and Logo */
+[data-amplify-authenticator]::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100vh;
+  background: #F3FAFB;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='48' font-weight='bold' fill='%23474C55' font-family='system-ui, -apple-system, sans-serif'%3EIris%3C/text%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center center;
+  z-index: 0;
+}
+
+@media (max-width: 1024px) {
+  [data-amplify-authenticator]::before {
+    display: none;
+  }
+}
+
+/* Container - Position on Right Half */
+[data-amplify-authenticator] [data-amplify-container] {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100vh;
+  background: white;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  z-index: 1;
+}
+
+@media (max-width: 1024px) {
+  [data-amplify-authenticator] [data-amplify-container] {
+    width: 100%;
+  }
+}
+
+/* Router */
+[data-amplify-authenticator] [data-amplify-router] {
+  width: 100%;
+  height: 100%;
+  background: white;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Router Content */
+[data-amplify-authenticator] [data-amplify-router-content] {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  padding: 0;
+  position: relative;
+}
+
+/* Form Wrapper - Centered Content with exact iris-core spacing */
+[data-amplify-authenticator] form {
+  width: 100%;
+  height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: white;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Form Content Container - exact max-w-md */
+[data-amplify-authenticator] [data-amplify-form] {
+  width: 100%;
+  max-width: 448px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Title Container */
+[data-amplify-authenticator] [data-amplify-router-content] > form > div:first-child {
+  text-align: center;
+}
+
+/* Title Styling - exact text-3xl */
+[data-amplify-authenticator] h2,
+[data-amplify-authenticator] [data-amplify-heading] {
+  margin-top: 1.5rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Subtitle - exact text-sm */
+[data-amplify-authenticator] [data-amplify-text] {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #52525b;
+  text-align: center;
+}
+
+/* Fieldset for inputs wrapper */
+[data-amplify-authenticator] [data-amplify-fieldset] {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+}
+
+/* Field Groups - space-y-6 equivalent */
+[data-amplify-authenticator] [data-amplify-field-group] {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+/* Hide Labels */
+[data-amplify-authenticator] label {
+  display: none !important;
+}
+
+/* Input Fields - Exact iris-core styling: peer block w-full rounded-md border px-2 py-[9px] text-sm */
+[data-amplify-authenticator] input[type="email"],
+[data-amplify-authenticator] input[type="password"],
+[data-amplify-authenticator] input[type="text"] {
+  display: block;
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  padding: 9px 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  background: white;
+  color: #18181b;
+  box-sizing: border-box;
+}
+
+[data-amplify-authenticator] input::placeholder {
+  color: #71717a;
+}
+
+[data-amplify-authenticator] input:focus {
+  border-color: #18181b;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Submit Button - Using Iris color #474C55 */
+[data-amplify-authenticator] button[type="submit"] {
+  margin-top: 1rem;
+  display: flex;
+  height: 2.5rem;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  background-color: #474C55;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #fafafa;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+[data-amplify-authenticator] button[type="submit"]:hover {
+  background-color: #5a5e66;
+}
+
+[data-amplify-authenticator] button[type="submit"]:disabled {
+  background-color: #a1a1aa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Remove tab list */
+[data-amplify-authenticator] [role="tablist"] {
+  display: none;
+}
+
+/* Footer Links */
+[data-amplify-authenticator] [data-amplify-footer] {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+[data-amplify-authenticator] [data-amplify-footer] button {
+  background: none;
+  border: none;
+  color: #18181b;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+[data-amplify-authenticator] [data-amplify-footer] button:hover {
+  text-decoration: underline;
+}
+
+/* Error Messages */
+[data-amplify-authenticator] [data-amplify-alert] {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* Password Requirements Text */
+[data-amplify-authenticator] [data-amplify-fieldset] {
+  margin-bottom: 0;
+}
+
+/* Loading Spinner */
+[data-amplify-authenticator] [data-amplify-loader] {
+  border-color: #474C55;
+  border-top-color: transparent;
+}
+
+/* Remove black background from password field icon */
+[data-amplify-authenticator] button[data-amplify-password-field-button] {
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* Remove any background from field button container */
+[data-amplify-authenticator] [data-amplify-field-group__control] button {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+/* Remove ALL possible borders and frames */
+[data-amplify-authenticator] * {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Specifically target any remaining border elements */
+[data-amplify-authenticator] [data-amplify-router-content] {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+[data-amplify-authenticator] [data-amplify-router-content] > * {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Remove any Amplify default styling that might add borders */
+[data-amplify-authenticator] [data-amplify-router-content] form,
+[data-amplify-authenticator] [data-amplify-router-content] div,
+[data-amplify-authenticator] [data-amplify-router-content] section {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+

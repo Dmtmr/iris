@@ -2,6 +2,8 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { useMessages } from "./hooks/useMessages";
+import { Message } from "./services/messageService";
 
 const client = generateClient<Schema>();
 
@@ -9,7 +11,9 @@ function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<'assistant' | 'tasks' | 'chats'>('assistant');
-  const { signOut } = useAuthenticator();
+  const { signOut, user } = useAuthenticator();
+  const { messages, loading, error, sendMessage, isConnected } = useMessages();
+  const [newMessage, setNewMessage] = useState('');
   
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -31,6 +35,22 @@ function App() {
 
   function handleTabChange(tab: 'assistant' | 'tasks' | 'chats') {
     setActiveTab(tab);
+  }
+
+  async function handleSendMessage() {
+    if (!newMessage.trim() || !user) return;
+
+    try {
+      await sendMessage({
+        source_email: user.signInDetails?.loginId || 'user@irispro.co',
+        destination_emails: 'client@example.com',
+        content: newMessage,
+        email_type: 'chat'
+      });
+      setNewMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   }
   
   
@@ -186,54 +206,48 @@ function App() {
             </div>
 
             <div className="messages-container">
-              <div className="message received">
-                <div className="message-bubble">
-                  <span className="message-icon">📱</span>
-                  <span>Hey There!</span>
-                </div>
-                <div className="message-time">Yesterday, 8:30pm</div>
-              </div>
-
-              <div className="message sent">
-                <div className="message-bubble">
-                  Hello! what do you need James?
-                </div>
-                <div className="message-time">Yesterday, 8:34pm</div>
-              </div>
-
-              <div className="message received">
-                <div className="message-bubble">
-                  <span className="message-icon">📧</span>
-                  <span>You got the report?</span>
-                </div>
-                <div className="message-time">Today, 8:30pm</div>
-              </div>
-
-              <div className="message sent">
-                <div className="message-bubble">
-                  Here is your report !
-                  <span className="attachment-icon">📎</span>
-                  <span className="message-icon">📧</span>
-                </div>
-                <div className="message-time">Today, 8:34pm</div>
-              </div>
-
-              <div className="message received">
-                <div className="message-bubble">
-                  <span className="message-icon">📧</span>
-                  <span>Cheers!</span>
-                </div>
-                <div className="message-time">Today, 10:30pm</div>
-              </div>
+              {loading ? (
+                <div className="message">Loading messages...</div>
+              ) : error ? (
+                <div className="message error">Error: {error}</div>
+              ) : messages.length === 0 ? (
+                <div className="message">No messages yet. Start a conversation!</div>
+              ) : (
+                messages.map((msg: Message) => (
+                  <div key={msg.id} className={`message ${msg.email_type === 'sent' ? 'sent' : 'received'}`}>
+                    <div className="message-bubble">
+                      {msg.email_type !== 'sent' && <span className="message-icon">📧</span>}
+                      <span>{msg.source_email}: {msg.destination_emails}</span>
+                    </div>
+                    <div className="message-time">
+                      {new Date(msg.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="message-input-container">
               <div className="input-with-attachment">
                 <span className="attachment-icon-inline">📎</span>
-                <input type="text" className="message-input" placeholder="Send a message" />
+                <input 
+                  type="text" 
+                  className="message-input" 
+                  placeholder="Send a message"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
               </div>
               <button className="send-btn">😊</button>
-              <button className="send-btn">➤</button>
+              <button 
+                className="send-btn" 
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim()}
+              >
+                ➤
+              </button>
+              {isConnected && <span className="connection-status">🟢</span>}
             </div>
           </div>
         </div>
