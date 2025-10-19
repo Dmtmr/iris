@@ -71,7 +71,7 @@ class MessageService {
   }
 
   // WebSocket connection for real-time messages (to be implemented later)
-  connectWebSocket(onMessage: (message: Message) => void): WebSocket | null {
+  connectWebSocket(_onMessage: (message: Message) => void): WebSocket | null {
     console.log('WebSocket not implemented yet');
     // TODO: Implement WebSocket connection
     return null;
