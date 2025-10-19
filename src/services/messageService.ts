@@ -27,25 +27,21 @@ export interface SendMessageData {
 }
 
 class MessageService {
-  private functionUrl: string | null = null;
+  private functionUrl: string = 'https://v5kaz72sua5rzzei4rfcla2qwq0kyrsb.lambda-url.us-east-1.on.aws/';
 
   constructor() {
-    // Function URL will be available after deployment in amplify_outputs
-    // For now, we'll check if it exists
-    if (typeof window !== 'undefined' && (window as any).amplify_outputs) {
-      const outputs = (window as any).amplify_outputs;
-      this.functionUrl = outputs.custom?.backendFunctionUrl || null;
+    // Check if Function URL is available in amplify_outputs (future enhancement)
+    if (typeof window !== 'undefined' && (window as any).amplify_outputs?.custom?.backendFunctionUrl) {
+      this.functionUrl = (window as any).amplify_outputs.custom.backendFunctionUrl;
+      console.log('Using Function URL from amplify_outputs:', this.functionUrl);
+    } else {
+      console.log('Using hardcoded Function URL:', this.functionUrl);
     }
   }
 
   async getMessages(): Promise<Message[]> {
     try {
-      console.log('getMessages called');
-      
-      if (!this.functionUrl) {
-        console.warn('Function URL not yet available, returning empty array');
-        return [];
-      }
+      console.log('getMessages called with Function URL:', this.functionUrl);
 
       const response = await fetch(this.functionUrl, {
         method: 'POST',
@@ -78,11 +74,7 @@ class MessageService {
   async sendMessage(messageData: SendMessageData): Promise<Message> {
     try {
       console.log('sendMessage called with:', messageData);
-      
-      if (!this.functionUrl) {
-        console.warn('Function URL not yet available');
-        throw new Error('Backend not ready');
-      }
+      console.log('Using Function URL:', this.functionUrl);
 
       const response = await fetch(this.functionUrl, {
         method: 'POST',
