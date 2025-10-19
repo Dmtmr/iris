@@ -4,6 +4,7 @@ import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useMessages } from "./hooks/useMessages";
 import { Message } from "./services/messageService";
+import { Send } from "lucide-react";
 
 const client = generateClient<Schema>();
 
@@ -114,19 +115,19 @@ function App() {
                 className={`query-tab ${activeTab === 'assistant' ? 'active' : ''}`}
                 onClick={() => handleTabChange('assistant')}
               >
-                Assistant
+                AI assistant
               </button>
               <button 
                 className={`query-tab ${activeTab === 'tasks' ? 'active' : ''}`}
                 onClick={() => handleTabChange('tasks')}
               >
-                Active tasks <span style={{background:'#333',color:'white',borderRadius:'50%',padding:'2px 6px',fontSize:'11px',marginLeft:'4px'}}>4</span>
+                Active tasks
               </button>
               <button 
                 className={`query-tab ${activeTab === 'chats' ? 'active' : ''}`}
                 onClick={() => handleTabChange('chats')}
               >
-                Client conversations
+                Clients chats
               </button>
             </div>
 
@@ -135,14 +136,17 @@ function App() {
                 <div className="query-content">
                   <div className="query-header">Query anything</div>
                   <div className="query-input-wrapper">
-                    <div className="query-icon">🔍</div>
+                    <div className="query-icon">
+                      <img src="./src/assets/logo2.png" alt="Iris" style={{ width: '24px', height: '24px' }} />
+                    </div>
                     <input type="text" className="query-input" placeholder="Ask away..." />
-                    <div className="query-avatar">DM</div>
                   </div>
                 </div>
                 <div className="message-input-container">
                   <input type="text" className="message-input" placeholder="Send a message" />
-                  <button className="send-btn">➤</button>
+                  <button className="send-btn-icon" type="button">
+                    <Send className="w-3 h-3" />
+                  </button>
                 </div>
               </>
             ) : activeTab === 'tasks' ? (
@@ -176,6 +180,10 @@ function App() {
                     </div>
                   </div>
                 </div>
+                <div className="message-input-container">
+                  <input type="text" className="message-input" placeholder="Send a message" />
+                  <button className="send-btn">➤</button>
+                </div>
               </>
             ) : (
               <>
@@ -208,6 +216,10 @@ function App() {
                     </div>
                   </div>
                 </div>
+                <div className="message-input-container">
+                  <input type="text" className="message-input" placeholder="Send a message" />
+                  <button className="send-btn">➤</button>
+                </div>
               </>
             )}
           </div>
@@ -218,9 +230,6 @@ function App() {
               <div className="chat-header-left">
                 <div className="chat-avatar">🍽️</div>
                 <div className="chat-title">James - Restaurant Ltd</div>
-              </div>
-              <div className="chat-actions">
-                <button className="chat-action-btn">⋮</button>
               </div>
             </div>
 
@@ -272,7 +281,11 @@ function App() {
 
             <div className="message-input-container">
               <div className="input-with-attachment">
-                <span className="attachment-icon-inline">📎</span>
+                <button className="attachment-btn" type="button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="attachment-icon">
+                    <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                  </svg>
+                </button>
                 <input 
                   type="text" 
                   className="message-input" 
@@ -282,13 +295,20 @@ function App() {
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
               </div>
-              <button className="send-btn">😊</button>
+              <button className="emoji-btn" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                  <line x1="9" x2="9.01" y1="9" y2="9"/>
+                  <line x1="15" x2="15.01" y1="9" y2="9"/>
+                </svg>
+              </button>
               <button 
-                className="send-btn" 
+                className="send-btn-icon" 
+                type="button"
                 onClick={handleSendMessage}
-                disabled={!newMessage.trim()}
               >
-                ➤
+                <Send className="w-3 h-3" />
               </button>
               {isConnected && <span className="connection-status">🟢</span>}
             </div>
