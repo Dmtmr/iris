@@ -4,7 +4,7 @@ import { data } from './data/resource';
 import { backend as backendFunction } from './functions/backend/resource';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Duration } from 'aws-cdk-lib';
-import { HttpMethod } from 'aws-cdk-lib/aws-lambda';
+import { HttpMethod, FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda';
 
 export const backend = defineBackend({
   auth,
@@ -30,7 +30,7 @@ backend.backendFunction.resources.lambda.role?.attachInlinePolicy(lambdaInvokePo
 
 // Add Function URL for direct invocation from frontend
 const functionUrl = backend.backendFunction.resources.lambda.addFunctionUrl({
-  authType: 'NONE', // Public access - consider adding auth later
+  authType: FunctionUrlAuthType.NONE, // Public access - consider adding auth later
   cors: {
     allowedOrigins: ['*'],
     allowedMethods: [HttpMethod.POST, HttpMethod.GET, HttpMethod.OPTIONS],
