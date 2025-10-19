@@ -232,17 +232,44 @@ function App() {
               ) : messages.length === 0 ? (
                 <div className="message">No messages yet. Start a conversation!</div>
               ) : (
-                messages.map((msg: Message) => (
-                  <div key={msg.id} className={`message ${msg.email_type === 'sent' ? 'sent' : 'received'}`}>
-                    <div className="message-bubble">
-                      {msg.email_type !== 'sent' && <span className="message-icon">📧</span>}
-                      <span>{msg.source_email}: {msg.destination_emails}</span>
+                messages.map((msg: Message) => {
+                  // Determine if message is outgoing or incoming
+                  const isOutgoing = msg.email_type === 'outgoing';
+                  
+                  // Parse destination_emails if it's a JSON string
+                  let destinationEmail = msg.destination_emails;
+                  try {
+                    const parsed = JSON.parse(msg.destination_emails);
+                    destinationEmail = Array.isArray(parsed) ? parsed[0] : parsed;
+                  } catch (e) {
+                    // If not JSON, use as is
+                  }
+
+                  return (
+                    <div key={msg.id} className={`message ${isOutgoing ? 'sent' : 'received'}`}>
+                      <div className="message-bubble">
+                        {!isOutgoing && <span className="message-icon">📧</span>}
+                        <div>
+                          <div style={{ fontWeight: '600', fontSize: '0.85em', marginBottom: '2px', color: '#555' }}>
+                            {isOutgoing ? `To: ${destinationEmail}` : `From: ${msg.source_email}`}
+                          </div>
+                          <div style={{ marginTop: '4px' }}>
+                            {msg.s3_location ? (
+                              <span style={{ fontStyle: 'italic', color: '#888', fontSize: '0.85em' }}>
+                                📄 View full email
+                              </span>
+                            ) : (
+                              <span>No content available</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="message-time">
+                        {new Date(msg.created_at).toLocaleString()}
+                      </div>
                     </div>
-                    <div className="message-time">
-                      {new Date(msg.created_at).toLocaleString()}
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
