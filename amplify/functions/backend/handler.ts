@@ -5,6 +5,23 @@ const lambdaClient = new LambdaClient({ region: 'us-east-1' });
 export async function handler(event: any) {
   console.log("Received event:", event);
 
+  // CORS headers for Function URL
+  const corsHeaders = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': '*',
+  };
+
+  // Handle OPTIONS preflight request
+  if (event.requestContext?.http?.method === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: '',
+    };
+  }
+
   try {
     const { action, data } = event;
     const lambdaName = process.env.LAMBDA_INBOUND_NAME || 'lambda-inbound';
@@ -39,7 +56,7 @@ export async function handler(event: any) {
 
         return {
           statusCode: 200,
-          headers: { "Content-Type": "application/json" },
+          headers: corsHeaders,
           body: JSON.stringify({
             messages: responseBody.messages || []
           }),
@@ -70,7 +87,7 @@ export async function handler(event: any) {
 
         return {
           statusCode: 200,
-          headers: { "Content-Type": "application/json" },
+          headers: corsHeaders,
           body: JSON.stringify({
             message: sendResult.message
           }),
@@ -79,7 +96,7 @@ export async function handler(event: any) {
       default:
         return {
           statusCode: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: corsHeaders,
           body: JSON.stringify({
             error: 'Invalid action',
             received: action
@@ -90,7 +107,7 @@ export async function handler(event: any) {
     console.error('Error:', error);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
       body: JSON.stringify({
         error: 'Internal server error',
         details: error instanceof Error ? error.message : 'Unknown error'

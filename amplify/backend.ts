@@ -30,13 +30,7 @@ backend.backendFunction.resources.lambda.role?.attachInlinePolicy(lambdaInvokePo
 
 // Add Function URL for direct invocation from frontend
 const functionUrl = backend.backendFunction.resources.lambda.addFunctionUrl({
-  authType: FunctionUrlAuthType.NONE, // Public access - consider adding auth later
-  cors: {
-    allowedOrigins: ['*'],
-    allowedMethods: [HttpMethod.POST, HttpMethod.GET, HttpMethod.OPTIONS],
-    allowedHeaders: ['*'],
-    maxAge: Duration.seconds(300),
-  },
+  authType: FunctionUrlAuthType.NONE,
 });
 
 // Output the function URL
