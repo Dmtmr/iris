@@ -23,8 +23,40 @@ export async function handler(event: any) {
   }
 
   try {
-    const { action, data } = event;
+    // Function URL sends the request in event.body as a string
+    let payload = event;
+    
+    if (event.body && typeof event.body === 'string') {
+      try {
+        payload = JSON.parse(event.body);
+        console.log('Parsed body from Function URL:', payload);
+      } catch (e) {
+        console.error('Failed to parse body:', e);
+        return {
+          statusCode: 400,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'Invalid JSON in request body' }),
+        };
+      }
+    }
+    
+    const { action, data } = payload;
     const lambdaName = process.env.LAMBDA_INBOUND_NAME || 'lambda-inbound';
+
+    console.log('Action:', action);
+    console.log('Data:', data);
+    console.log('Full payload:', payload);
+
+    if (!action) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ 
+          error: 'Missing action field',
+          received: payload 
+        }),
+      };
+    }
 
     switch (action) {
       case 'getMessages':
@@ -33,7 +65,7 @@ export async function handler(event: any) {
         
         const getMessagesPayload = {
           action: 'getMessages',
-          email: data?.email || 'demo@irispro.xyz',
+          email: payload.email || 'demo@irispro.xyz',
         };
 
         const getResponse = await lambdaClient.send(
