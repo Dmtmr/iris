@@ -79,6 +79,24 @@ function App() {
                 {!sidebarCollapsed && <span>AI Workflows</span>}
               </a>
             </nav>
+            <div style={{ marginTop: 'auto', padding: '1rem' }}>
+              <button 
+                onClick={signOut}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                  fontWeight: '500'
+                }}
+              >
+                {!sidebarCollapsed ? '🚪 Sign Out' : '🚪'}
+              </button>
+            </div>
       </div>
 
       {/* Main Content */}
