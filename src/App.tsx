@@ -5,6 +5,7 @@ import { generateClient } from "aws-amplify/data";
 import { useMessages } from "./hooks/useMessages";
 import { Message } from "./services/messageService";
 import { Send } from "lucide-react";
+import logo2 from "./assets/logo2.png";
 
 const client = generateClient<Schema>();
 
@@ -137,7 +138,7 @@ function App() {
                   <div className="query-header">Query anything</div>
                   <div className="query-input-wrapper">
                     <div className="query-icon">
-                      <img src="./src/assets/logo2.png" alt="Iris" style={{ width: '24px', height: '24px' }} />
+                      <img src={logo2} alt="Iris" style={{ width: '24px', height: '24px' }} />
                     </div>
                     <input type="text" className="query-input" placeholder="Ask away..." />
                   </div>
