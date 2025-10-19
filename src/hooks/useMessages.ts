@@ -8,16 +8,20 @@ export function useMessages() {
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   // Fetch messages from API
-  const fetchMessages = useCallback(async () => {
+  const fetchMessages = useCallback(async (showLoading = false) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       setError(null);
       const fetchedMessages = await messageService.getMessages();
       setMessages(fetchedMessages);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch messages');
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -52,15 +56,15 @@ export function useMessages() {
     };
   }, []);
 
-  // Initial fetch
+  // Initial fetch (show loading)
   useEffect(() => {
-    fetchMessages();
+    fetchMessages(true);
   }, [fetchMessages]);
 
-  // Poll for new messages every 5 seconds
+  // Poll for new messages every 5 seconds (don't show loading)
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchMessages();
+      fetchMessages(false); // Silent background refresh
     }, 5000); // 5 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
