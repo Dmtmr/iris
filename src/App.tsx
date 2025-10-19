@@ -43,7 +43,7 @@ function App() {
     try {
       await sendMessage({
         source_email: user.signInDetails?.loginId || 'user@irispro.co',
-        destination_emails: 'client@example.com',
+        destination_emails: 'iris24ai@gmail.com',
         content: newMessage,
         email_type: 'chat',
         subject: `Message from ${user.signInDetails?.loginId || 'user@irispro.co'}`
