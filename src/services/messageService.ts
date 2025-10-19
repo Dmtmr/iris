@@ -1,4 +1,4 @@
-import { generateClient } from 'aws-amplify/api';
+import { generateClient } from 'aws-amplify/data';
 
 const client = generateClient();
 
@@ -21,29 +21,24 @@ export interface SendMessageData {
 }
 
 class MessageService {
-  private baseUrl = '';
-
-  constructor() {
-    // Get the API endpoint from Amplify outputs
-    if (typeof window !== 'undefined' && (window as any).amplify_outputs) {
-      this.baseUrl = (window as any).amplify_outputs.custom.messageHandlerApiUrl || '';
-    }
-  }
-
   async getMessages(): Promise<Message[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/messages`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      // Call Lambda function to get messages
+      const response = await (client as any).functions.backend.invoke({
+        payload: {
+          action: 'getMessages'
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      console.log('Get messages response:', response);
+      
+      // Parse the response
+      if (response.body) {
+        const body = JSON.parse(response.body);
+        return body.messages || [];
       }
-
-      return await response.json();
+      
+      return [];
     } catch (error) {
       console.error('Error fetching messages:', error);
       throw error;
@@ -52,57 +47,34 @@ class MessageService {
 
   async sendMessage(messageData: SendMessageData): Promise<Message> {
     try {
-      const response = await fetch(`${this.baseUrl}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(messageData),
+      // Call Lambda function to send message
+      const response = await (client as any).functions.backend.invoke({
+        payload: {
+          action: 'sendMessage',
+          data: messageData
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      console.log('Send message response:', response);
+
+      // Parse the response
+      if (response.body) {
+        const body = JSON.parse(response.body);
+        return body.message;
       }
 
-      return await response.json();
+      throw new Error('Invalid response from backend');
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
     }
   }
 
-  // WebSocket connection for real-time messages
+  // WebSocket connection for real-time messages (to be implemented later)
   connectWebSocket(onMessage: (message: Message) => void): WebSocket | null {
-    try {
-      const wsUrl = this.baseUrl.replace('http', 'ws') + '/ws';
-      const ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        console.log('WebSocket connected');
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const message = JSON.parse(event.data);
-          onMessage(message);
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      ws.onclose = () => {
-        console.log('WebSocket disconnected');
-      };
-
-      return ws;
-    } catch (error) {
-      console.error('Error connecting WebSocket:', error);
-      return null;
-    }
+    console.log('WebSocket not implemented yet');
+    // TODO: Implement WebSocket connection
+    return null;
   }
 }
 
