@@ -60,10 +60,21 @@ class MessageService {
 
       const result = await response.json();
       console.log('Get messages response:', result);
+      console.log('Response type:', typeof result);
+      console.log('Has body?:', 'body' in result);
+      console.log('Has messages?:', 'messages' in result);
       
-      // Parse the response body if it's a string
-      const body = typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
-      return body?.messages || [];
+      // Function URL returns the response directly, not wrapped in statusCode/body
+      if (result.messages) {
+        // Direct response
+        return result.messages;
+      } else if (result.body) {
+        // Wrapped response
+        const body = typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
+        return body?.messages || [];
+      }
+      
+      return [];
       
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -94,9 +105,18 @@ class MessageService {
       const result = await response.json();
       console.log('Send message response:', result);
       
-      // Parse the response body if it's a string
-      const body = typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
-      return body?.message || {
+      // Function URL returns the response directly, not wrapped in statusCode/body
+      if (result.message) {
+        // Direct response
+        return result.message;
+      } else if (result.body) {
+        // Wrapped response
+        const body = typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
+        return body?.message;
+      }
+      
+      // Fallback mock message
+      return {
         id: Date.now(),
         message_id: `msg_${Date.now()}`,
         timestamp: new Date().toISOString(),
