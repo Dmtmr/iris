@@ -1,51 +1,78 @@
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
+
+const lambdaClient = new LambdaClient({ region: 'us-east-1' });
+
 export async function handler(event: any) {
   console.log("Received event:", event);
 
   try {
     const { action, data } = event;
+    const lambdaName = process.env.LAMBDA_INBOUND_NAME || 'lambda-inbound';
 
     switch (action) {
       case 'getMessages':
-        // TODO: Fetch messages from database
+        // Invoke Lambda-Inbound to get messages from RDS
+        console.log('getMessages requested');
+        
+        const getMessagesPayload = {
+          action: 'getMessages',
+          email: data?.email || 'demo@irispro.xyz',
+        };
+
+        const getResponse = await lambdaClient.send(
+          new InvokeCommand({
+            FunctionName: lambdaName,
+            Payload: JSON.stringify(getMessagesPayload),
+          })
+        );
+
+        const getResult = JSON.parse(
+          new TextDecoder().decode(getResponse.Payload)
+        );
+        
+        console.log('getMessages response:', getResult);
+
+        // Parse the body if it's a string
+        const responseBody = typeof getResult.body === 'string' 
+          ? JSON.parse(getResult.body) 
+          : getResult.body;
+
         return {
           statusCode: 200,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            messages: [
-              {
-                id: 1,
-                message_id: 'msg_001',
-                timestamp: new Date().toISOString(),
-                source_email: 'test@example.com',
-                destination_emails: 'user@example.com',
-                email_type: 'chat',
-                created_at: new Date().toISOString(),
-                content: 'Hello! This is a test message from the backend.'
-              }
-            ]
+            messages: responseBody.messages || []
           }),
         };
 
       case 'sendMessage':
-        // TODO: Save message to database
-        console.log('Sending message:', data);
+        // Invoke Lambda-Inbound to send message
+        console.log('Sending message via Lambda-Inbound:', data);
         
-        const newMessage = {
-          id: Date.now(),
-          message_id: `msg_${Date.now()}`,
-          timestamp: new Date().toISOString(),
-          source_email: data.source_email,
-          destination_emails: data.destination_emails,
-          email_type: data.email_type,
-          created_at: new Date().toISOString(),
-          content: data.content
+        // Transform to lambda-inbound's expected format
+        const sendMessagePayload = {
+          to_email: data.destination_emails,
+          subject: data.subject || `Message from ${data.source_email}`,
+          body_text: data.content,
+          body_html: data.body_html || `<p>${data.content}</p>`,
         };
+
+        const sendResponse = await lambdaClient.send(
+          new InvokeCommand({
+            FunctionName: lambdaName,
+            Payload: JSON.stringify(sendMessagePayload),
+          })
+        );
+
+        const sendResult = JSON.parse(
+          new TextDecoder().decode(sendResponse.Payload)
+        );
 
         return {
           statusCode: 200,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: newMessage
+            message: sendResult.message
           }),
         };
 

@@ -57,6 +57,15 @@ export function useMessages() {
     fetchMessages();
   }, [fetchMessages]);
 
+  // Poll for new messages every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [fetchMessages]);
+
   return {
     messages,
     loading,

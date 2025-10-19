@@ -18,6 +18,8 @@ export interface SendMessageData {
   destination_emails: string;
   content: string;
   email_type: string;
+  subject?: string;
+  body_html?: string;
 }
 
 class MessageService {

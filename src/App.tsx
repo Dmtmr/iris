@@ -45,7 +45,8 @@ function App() {
         source_email: user.signInDetails?.loginId || 'user@irispro.co',
         destination_emails: 'client@example.com',
         content: newMessage,
-        email_type: 'chat'
+        email_type: 'chat',
+        subject: `Message from ${user.signInDetails?.loginId || 'user@irispro.co'}`
       });
       setNewMessage('');
     } catch (error) {
