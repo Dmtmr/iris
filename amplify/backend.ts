@@ -25,3 +25,21 @@ const lambdaInvokePolicy = new Policy(
 );
 
 backend.backendFunction.resources.lambda.role?.attachInlinePolicy(lambdaInvokePolicy);
+
+// Add Function URL for direct invocation from frontend
+const functionUrl = backend.backendFunction.resources.lambda.addFunctionUrl({
+  authType: 'NONE', // Public access - consider adding auth later
+  cors: {
+    allowedOrigins: ['*'],
+    allowedMethods: ['POST', 'GET', 'OPTIONS'],
+    allowedHeaders: ['*'],
+    maxAge: 300,
+  },
+});
+
+// Output the function URL
+backend.addOutput({
+  custom: {
+    backendFunctionUrl: functionUrl.url,
+  },
+});
