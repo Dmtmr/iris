@@ -3,6 +3,8 @@ import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { backend as backendFunction } from './functions/backend/resource';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Duration } from 'aws-cdk-lib';
+import { HttpMethod } from 'aws-cdk-lib/aws-lambda';
 
 export const backend = defineBackend({
   auth,
@@ -31,9 +33,9 @@ const functionUrl = backend.backendFunction.resources.lambda.addFunctionUrl({
   authType: 'NONE', // Public access - consider adding auth later
   cors: {
     allowedOrigins: ['*'],
-    allowedMethods: ['POST', 'GET', 'OPTIONS'],
+    allowedMethods: [HttpMethod.POST, HttpMethod.GET, HttpMethod.OPTIONS],
     allowedHeaders: ['*'],
-    maxAge: 300,
+    maxAge: Duration.seconds(300),
   },
 });
 
