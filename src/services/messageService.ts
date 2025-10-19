@@ -15,6 +15,8 @@ export interface Message {
   s3_location?: string;
   email_type: string;
   created_at: string;
+  subject?: string;
+  body_text?: string;
 }
 
 export interface SendMessageData {
@@ -27,15 +29,21 @@ export interface SendMessageData {
 }
 
 class MessageService {
-  private functionUrl: string = 'https://v5kaz72sua5rzzei4rfcla2qwq0kyrsb.lambda-url.us-east-1.on.aws/';
+  private functionUrl: string = '';
 
   constructor() {
-    // Check if Function URL is available in amplify_outputs (future enhancement)
-    if (typeof window !== 'undefined' && (window as any).amplify_outputs?.custom?.backendFunctionUrl) {
-      this.functionUrl = (window as any).amplify_outputs.custom.backendFunctionUrl;
-      console.log('Using Function URL from amplify_outputs:', this.functionUrl);
-    } else {
-      console.log('Using hardcoded Function URL:', this.functionUrl);
+    // Try to get Function URL from amplify_outputs.json
+    if (typeof window !== 'undefined') {
+      // Check if amplify_outputs is in window (loaded by Amplify)
+      const outputs = (window as any).amplify_outputs;
+      if (outputs?.custom?.backendFunctionUrl) {
+        this.functionUrl = outputs.custom.backendFunctionUrl;
+        console.log('Using Function URL from amplify_outputs:', this.functionUrl);
+      } else {
+        // Fallback to production URL
+        this.functionUrl = 'https://v5kaz72sua5rzzei4rfcla2qwq0kyrsb.lambda-url.us-east-1.on.aws/';
+        console.log('Using production Function URL:', this.functionUrl);
+      }
     }
   }
 

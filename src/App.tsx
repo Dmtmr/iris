@@ -232,7 +232,8 @@ function App() {
               ) : messages.length === 0 ? (
                 <div className="message">No messages yet. Start a conversation!</div>
               ) : (
-                messages.map((msg: Message) => {
+                // Reverse messages so most recent at bottom
+                [...messages].reverse().map((msg: Message) => {
                   // Determine if message is outgoing or incoming
                   const isOutgoing = msg.email_type === 'outgoing';
                   
@@ -250,17 +251,13 @@ function App() {
                       <div className="message-bubble">
                         {!isOutgoing && <span className="message-icon">📧</span>}
                         <div>
-                          <div style={{ fontWeight: '600', fontSize: '0.85em', marginBottom: '2px', color: '#555' }}>
-                            {isOutgoing ? `To: ${destinationEmail}` : `From: ${msg.source_email}`}
-                          </div>
-                          <div style={{ marginTop: '4px' }}>
-                            {msg.s3_location ? (
-                              <span style={{ fontStyle: 'italic', color: '#888', fontSize: '0.85em' }}>
-                                📄 View full email
-                              </span>
-                            ) : (
-                              <span>No content available</span>
-                            )}
+                          {msg.subject && (
+                            <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '2px' }}>
+                              Subject: {msg.subject}
+                            </div>
+                          )}
+                          <div style={{ fontSize: '0.95em' }}>
+                            {msg.body_text || '[Message content in S3]'}
                           </div>
                         </div>
                       </div>
