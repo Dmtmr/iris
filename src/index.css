@@ -718,6 +718,11 @@ a {
   border: none !important;
 }
 
+/* Reset messages scrollbar to default color; hide arrows and track fill */
+.messages-container { scrollbar-color: auto transparent; }
+.messages-container::-webkit-scrollbar-track { background: transparent; }
+.messages-container::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+
 /* Chat tabs use the same styling as query tabs */
 .chat-tabs {
   display: flex;
