@@ -1,3 +1,26 @@
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  transition: filter 0.2s ease;
+}
+
+/* Selected tab: render icon in black */
+.nav-item.active .nav-icon {
+  filter: brightness(0) saturate(100%);
+}
+
+/* 10% bigger for bot and workflows, 20% smaller for data */
+.nav-icon-bot,
+.nav-icon-workflows {
+  width: 22px;
+  height: 22px;
+}
+
+.nav-icon-data {
+  width: 16px;
+  height: 16px;
+}
 html, body {
   margin: 0;
   padding: 0;
@@ -102,19 +125,19 @@ a {
 }
 
 .sidebar-header {
-  padding: 20px;
+  padding: 12px; /* reduced ~30% */
   display: flex;
   align-items: center;
   gap: 10px;
   border-bottom: 1px solid #e0e0e0;
   transition: padding 0.3s ease;
   box-sizing: border-box;
-  min-height: 60px;
+  min-height: 42px; /* reduced ~30% */
   position: relative;
 }
 
 .sidebar.collapsed .sidebar-header {
-  padding: 20px 10px;
+  padding: 12px 10px; /* keep proportion when collapsed */
   justify-content: center;
 }
 
@@ -134,7 +157,7 @@ a {
 .collapse-btn {
   position: absolute;
   right: -12px;
-  top: 20px;
+  top: 12px; /* align within reduced header height */
   background: white;
   border: 1px solid #e0e0e0;
   border-radius: 50%;
@@ -143,7 +166,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px; /* slightly larger double arrow */
+  line-height: 1; /* keep glyph centered vertically */
   cursor: pointer;
   color: #666;
   padding: 0;
@@ -177,11 +201,33 @@ a {
   font-family: 'Inder', sans-serif;
   font-weight: 400;
   font-size: 14px;
+  border-radius: 10px; /* allow rounded corners for selection */
+  margin: 4px 10px; /* inset so highlight doesn't span full width */
+  border: 1px solid transparent; /* avoid layout shift when adding hover border */
 }
 
 .sidebar.collapsed .nav-item {
   padding: 12px;
   justify-content: center;
+  margin: 4px; /* tighter inset when collapsed */
+}
+
+/* Slight right shift for Data hub row only (expanded state) */
+.nav-item-data {
+  padding-left: 26px;
+}
+
+.sidebar.collapsed .nav-item-data {
+  padding-left: 12px; /* keep centered when collapsed */
+}
+
+/* Nudge only the Data hub icon ~1mm left; keep label in place */
+.nav-item-data .nav-icon {
+  margin-left: -4px;
+}
+
+.sidebar.collapsed .nav-item-data .nav-icon {
+  margin-left: 0;
 }
 
 .nav-item:hover {
@@ -189,10 +235,16 @@ a {
 }
 
 .nav-item.active {
-  background: #F2F2F2;
+  background: #F2F2F2; /* filled but inset due to margin */
   color: #333;
   font-weight: 400;
   font-family: 'Inder', sans-serif;
+  border: 1px solid #DDD9C3; /* thin border per updated request */
+}
+
+/* On hover, use the same border color on non-selected tabs */
+.nav-item:hover {
+  border-color: #DDD9C3;
 }
 
 /* Main Content */
@@ -204,31 +256,33 @@ a {
 }
 
 .main-header {
-  padding: 20px 30px;
+  padding: 14px 30px; /* micro bump for perfect match */
+  background: white; /* match chat header (James - Restaurant Ltd) fill */
   border-bottom: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  min-height: 60px;
+  min-height: 42px; /* match sidebar header height */
 }
 
 .main-header h2 {
   font-size: 18px;
   font-weight: 600;
   color: #333;
+  margin: 0; /* remove default margins to match sidebar height */
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 28px; /* ~30% smaller */
+  height: 28px; /* ~30% smaller */
   border-radius: 50%;
   background: #1a1a1a;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -381,7 +435,7 @@ a {
   padding-bottom: 0px;
   padding-left: 0;
   padding-right: 0;
-  margin-top: -10px; /* negative margin to move up further */
+  margin-top: -7px; /* micro adjustment downwards for perfect alignment */
   margin-bottom: 0px;
   border-bottom: 1px solid #e0e0e0;
   gap: 2px;
@@ -439,9 +493,13 @@ a {
   margin-bottom: 15px;
   color: #333;
   background: #F3FAFB;
-  padding: 16px 0 16px 20px;
+  padding: 0 20px; /* zero vertical padding */
   margin: 0 0 15px 0;
   border-radius: 0;
+  height: 50px; /* slight increase for better match */
+  display: flex; /* vertically center */
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0; /* match chat header's bottom border */
 }
 
 .query-input-wrapper {
@@ -462,9 +520,25 @@ a {
 }
 
 .query-icon {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
+}
+
+/* Masked bot icon using bot.png with custom line color */
+.bot-mask {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: #474C55; /* bot line color */
+  -webkit-mask-image: url('./assets/bot.png');
+  mask-image: url('./assets/bot.png');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .query-input {
@@ -559,7 +633,7 @@ a {
 
 .message-input {
   flex: 1;
-  padding: 10px 45px 10px 44px;
+  padding: 10px 45px 10px 44px; /* default for main chat */
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   font-size: 14px;
@@ -573,6 +647,7 @@ a {
 /* Subtle spacing between assistant input and send button */
 .query-section-full .message-input {
   margin-right: 10px;
+  padding-left: 25px !important; /* only assistant input shifts left */
 }
 
 .message-input::placeholder {
@@ -626,6 +701,12 @@ a {
   color: #4b5563;
 }
 
+/* Assistant area only: nudge send button left without affecting input */
+.query-section-full .send-btn-icon {
+  position: relative;
+  left: -8px; /* ~2mm */
+}
+
 /* Right Panel - Chat */
 .chat-panel {
   flex: 1;
@@ -635,6 +716,70 @@ a {
   margin-left: 0; /* Align with divider; avoid pushing the divider into chat */
   border-left: none !important;
   border: none !important;
+}
+
+/* Chat tabs use the same styling as query tabs */
+.chat-tabs {
+  display: flex;
+  align-items: flex-end;
+  padding-top: 4px; /* nudge tabs down slightly */
+  padding-bottom: 0;
+  margin-top: 8px; /* micro adjustment for perfect alignment */
+  margin-bottom: 0;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 2px;
+}
+.user-menu-container {
+  position: relative;
+  margin-right: 8px; /* adjust ~3mm right from previous */
+}
+
+/* Show hand cursor when hovering the top-right avatar */
+.user-menu-container .user-avatar {
+  cursor: pointer;
+}
+
+.user-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #F3FAFB; /* blue fill like nav bar */
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  padding: 10px 12px; /* larger box */
+  min-width: 180px;
+  z-index: 50;
+}
+
+.user-menu-item {
+  background: transparent;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 0;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: center; /* center text */
+  width: 100%;
+}
+
+.user-menu-item:hover {
+  background: #E9F3F6; /* subtle hover within blue fill */
+}
+
+/* Make chat tabs the same visual size as assistant tabs (not stretching full width) */
+.chat-tabs .query-tab {
+  flex: 0 0 auto; /* shrink to content */
+  min-width: 160px; /* ensure equal visual width for two tabs */
+  text-align: center;
+}
+
+/* Make assistant tabs same length as chat tabs */
+.query-section-full .query-tab {
+  flex: 0 0 auto;
+  min-width: 160px;
+  text-align: center;
 }
 
 .chat-panel *,
@@ -650,13 +795,14 @@ a {
 }
 
 .chat-header {
-  padding: 20px 30px;
-  background: white;
+  padding: 0 20px; /* keep top edge fixed */
+  background: #F3FAFB; /* match query header fill */
   border-bottom: 1px solid #e0e0e0;
   border-left: none !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 52px; /* grow downward by ~2px (≈1mm) */
 }
 
 .chat-header::before,
@@ -672,19 +818,19 @@ a {
 }
 
 .chat-avatar {
-  width: 42px;
-  height: 42px;
+  width: 28px; /* tiny bit smaller */
+  height: 28px;
   border-radius: 50%;
   background: #ff6b35;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .chat-title {
-  font-size: 16px;
+  font-size: 14px; /* match query header text size for equal height */
   font-weight: 600;
   color: #333;
 }
@@ -759,16 +905,33 @@ a {
 }
 
 .message.received .message-bubble {
-  background: white;
+  background: #F5F5F5; /* match selected tab fill */
   color: #333;
   border-bottom-left-radius: 4px;
-  border: none !important;
+  border: 1px solid #EEECE1 !important; /* very thin border */
 }
 
 .message.sent .message-bubble {
   background: #e3f2fd;
   color: #333;
   border-bottom-right-radius: 4px;
+  border: 1px solid #DCE6F2;
+}
+
+/* Right-side logo for outgoing messages */
+.message-avatar-right {
+  width: 20px; /* same size as previous logo2 */
+  height: 20px;
+  border-radius: 50%;
+  margin-left: 8px;
+  flex-shrink: 0;
+  background: #1a1a1a; /* match user avatar color */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .message-time {
@@ -780,6 +943,21 @@ a {
 .message-icon {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
+}
+
+/* Avatar within received message bubble */
+.message-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff6b35; /* same color as chat avatar */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  margin-right: 8px;
   flex-shrink: 0;
 }
 
@@ -867,6 +1045,11 @@ a {
   flex-direction: column;
   gap: 8px;
   margin-top: 20px;
+}
+
+/* Highlight James box in Client chats with thicker border */
+.james-highlight {
+  border: 2px solid #A4D1DC;
 }
 
 .chat-item {
