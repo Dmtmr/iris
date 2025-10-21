@@ -238,14 +238,14 @@ function App() {
 
             {activeChatTab === 'conversation' ? (
               <>
-                <div className="chat-header">
-                  <div className="chat-header-left">
-                    <div className="chat-avatar">🍽️</div>
-                    <div className="chat-title">James - Restaurant Ltd</div>
-                  </div>
-                </div>
+            <div className="chat-header">
+              <div className="chat-header-left">
+                <div className="chat-avatar">🍽️</div>
+                <div className="chat-title">James - Restaurant Ltd</div>
+              </div>
+            </div>
 
-                <div className="messages-container">
+            <div className="messages-container">
                   {loading ? (
                     <div className="message">Loading messages...</div>
                   ) : error ? (
@@ -263,33 +263,33 @@ function App() {
 
                       return (
                         <div key={msg.id} className={`message ${isOutgoing ? 'sent' : 'received'}`}>
-                          <div className="message-bubble">
+                <div className="message-bubble">
                             {!isOutgoing && <div className="message-avatar">🍽️</div>}
                             <div>
                               {msg.subject && (
                                 <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '2px' }}>
                                   Subject: {msg.subject}
-                                </div>
+                </div>
                               )}
                               <div style={{ fontSize: '0.95em' }}>
                                 {msg.body_text || '[Message content in S3]'}
-                              </div>
-                            </div>
+              </div>
+                </div>
                             {isOutgoing && (
                               <div className="message-avatar-right">DM</div>
                             )}
-                          </div>
+              </div>
                           <div className="message-time">
                             {new Date(msg.created_at).toLocaleString()}
-                          </div>
+              </div>
                         </div>
                       );
                     })
                   )}
-                </div>
+            </div>
 
-                <div className="message-input-container">
-                  <div className="input-with-attachment">
+            <div className="message-input-container">
+              <div className="input-with-attachment">
                     <button className="attachment-btn" type="button">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="attachment-icon">
                         <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
@@ -354,7 +354,7 @@ function App() {
                     </div>
                     <div className="chat-time">9:12am</div>
                   </div>
-                </div>
+              </div>
               </>
             )}
           </div>
