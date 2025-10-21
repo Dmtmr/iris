@@ -30,13 +30,23 @@ export function useMessages() {
     try {
       setError(null);
       const newMessage = await messageService.sendMessage(messageData);
-      setMessages(prev => [newMessage, ...prev]);
+
+      // Optimistic add only if the returned shape looks like a Message
+      if (newMessage && typeof newMessage === 'object' && 'created_at' in newMessage) {
+        setMessages(prev => [newMessage as Message, ...prev]);
+      }
+
+      // Reconcile with server shortly after send to ensure persistence is reflected
+      setTimeout(() => {
+        fetchMessages(false);
+      }, 1200);
+
       return newMessage;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send message');
       throw err;
     }
-  }, []);
+  }, [fetchMessages]);
 
   // Connect to WebSocket for real-time updates
   useEffect(() => {
