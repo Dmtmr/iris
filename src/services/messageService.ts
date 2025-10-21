@@ -32,7 +32,17 @@ class MessageService {
   private functionUrl: string = '';
 
   constructor() {
-    // Try to get Function URL from amplify_outputs.json
+    // 1) Allow local override via Vite env
+    try {
+      const viteEnv = (import.meta as any)?.env;
+      if (viteEnv?.VITE_FUNCTION_URL_OVERRIDE) {
+        this.functionUrl = viteEnv.VITE_FUNCTION_URL_OVERRIDE as string;
+        console.log('Using Function URL from VITE_FUNCTION_URL_OVERRIDE:', this.functionUrl);
+        return;
+      }
+    } catch {}
+
+    // 2) Try to get Function URL from amplify_outputs.json (window.amplify_outputs)
     if (typeof window !== 'undefined') {
       // Check if amplify_outputs is in window (loaded by Amplify)
       const outputs = (window as any).amplify_outputs;
@@ -47,18 +57,50 @@ class MessageService {
     }
   }
 
-  async getMessages(): Promise<Message[]> {
+  async getMessages(userEmail?: string): Promise<Message[]> {
     try {
       console.log('getMessages called with Function URL:', this.functionUrl);
+      let emailToQuery = userEmail || 'demo@irispro.xyz';
+
+      // 1) URL param (?email=foo@bar) takes highest precedence for local dev
+      try {
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const paramEmail = params.get('email');
+          if (paramEmail) {
+            emailToQuery = paramEmail;
+          }
+        }
+      } catch {}
+
+      // 2) Local storage override (set via DevTools): localStorage.setItem('messages_email_override', 'user@domain')
+      try {
+        if (typeof window !== 'undefined') {
+          const lsEmail = window.localStorage?.getItem('messages_email_override');
+          if (lsEmail) {
+            emailToQuery = lsEmail;
+          }
+        }
+      } catch {}
+
+      // 3) Vite env override from .env.local
+      try {
+        const viteEnv = (import.meta as any)?.env;
+        if (viteEnv?.VITE_MESSAGES_EMAIL_OVERRIDE) {
+          emailToQuery = viteEnv.VITE_MESSAGES_EMAIL_OVERRIDE as string;
+        }
+      } catch {}
+      console.log('Using email filter:', emailToQuery);
 
       const response = await fetch(this.functionUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          // Use text/plain to avoid CORS preflight in browsers
+          'Content-Type': 'text/plain',
         },
         body: JSON.stringify({
           action: 'getMessages',
-          email: 'demo@irispro.xyz'
+          email: emailToQuery
         }),
       });
 
@@ -98,7 +140,8 @@ class MessageService {
       const response = await fetch(this.functionUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          // Use text/plain to avoid CORS preflight in browsers
+          'Content-Type': 'text/plain',
         },
         body: JSON.stringify({
           action: 'sendMessage',

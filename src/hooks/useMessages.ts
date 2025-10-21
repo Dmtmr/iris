@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { messageService, Message, SendMessageData } from '../services/messageService';
 
+import { useAuthenticator } from '@aws-amplify/ui-react';
+
 export function useMessages() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
+  const { user } = useAuthenticator();
 
   // Fetch messages from API
   const fetchMessages = useCallback(async (showLoading = false) => {
@@ -14,7 +17,8 @@ export function useMessages() {
         setLoading(true);
       }
       setError(null);
-      const fetchedMessages = await messageService.getMessages();
+      const userEmail = user?.signInDetails?.loginId;
+      const fetchedMessages = await messageService.getMessages(userEmail);
       setMessages(fetchedMessages);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch messages');
@@ -23,7 +27,7 @@ export function useMessages() {
         setLoading(false);
       }
     }
-  }, []);
+  }, [user?.signInDetails?.loginId]);
 
   // Send a new message
   const sendMessage = useCallback(async (messageData: SendMessageData) => {
