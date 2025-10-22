@@ -1,5 +1,6 @@
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import type React from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useMessages } from "./hooks/useMessages";
@@ -9,6 +10,8 @@ import logo2 from "./assets/logo2.png";
 import botIcon from "./assets/bot.png";
 import dataIcon from "./assets/Data.png";
 import workflowsIcon from "./assets/Workflows.png";
+import logoDefault from "./assets/logo-default.png";
+import logoShort from "./assets/logo-short.png";
 import emailIcon from "./assets/email.png";
 import slackIcon from "./assets/slack.png";
 import phoneIcon from "./assets/phone.png";
@@ -24,6 +27,56 @@ function App() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { messages, loading, error, sendMessage, isConnected } = useMessages();
   const [newMessage, setNewMessage] = useState('');
+  const [assistantPanelWidth, setAssistantPanelWidth] = useState<number>(410);
+  const contentWrapperRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingRef = useRef(false);
+  const [showResizerHint, setShowResizerHint] = useState(false);
+  const [resizerHintLeft, setResizerHintLeft] = useState<number>(assistantPanelWidth);
+  const RESIZE_PAD_LEFT = 14; // px on assistant side
+  const RESIZE_PAD_RIGHT = 33; // px on main chat side (~14px + 5mm)
+
+  const handleResizerMouseDown = () => {
+    isDraggingRef.current = true;
+    setShowResizerHint(true);
+    setResizerHintLeft(assistantPanelWidth);
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', handleResizerMouseMove as any);
+    document.addEventListener('mouseup', handleResizerMouseUp as any);
+  };
+
+  const handleContentMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!contentWrapperRef.current) return;
+    const rect = contentWrapperRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const sep = assistantPanelWidth;
+    const withinLeft = x >= sep - RESIZE_PAD_LEFT && x <= sep;
+    const withinRight = x > sep && x <= sep + RESIZE_PAD_RIGHT;
+    if (withinLeft || withinRight) {
+      handleResizerMouseDown();
+      e.preventDefault();
+    }
+  };
+
+  const handleResizerMouseMove = (e: MouseEvent) => {
+    if (!isDraggingRef.current || !contentWrapperRef.current) return;
+    const rect = contentWrapperRef.current.getBoundingClientRect();
+    let nextWidth = e.clientX - rect.left;
+    const min = 260;
+    const max = Math.max(320, rect.width - 320);
+    if (nextWidth < min) nextWidth = min;
+    if (nextWidth > max) nextWidth = max;
+    setAssistantPanelWidth(nextWidth);
+    setResizerHintLeft(nextWidth);
+  };
+
+  const handleResizerMouseUp = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setShowResizerHint(false);
+    document.body.style.userSelect = '';
+    document.removeEventListener('mousemove', handleResizerMouseMove as any);
+    document.removeEventListener('mouseup', handleResizerMouseUp as any);
+  };
   
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -70,7 +123,7 @@ function App() {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <h1>Lift</h1>
+          <img src={sidebarCollapsed ? logoShort : logoDefault} alt="Lift" className="brand-logo" />
           <button className="collapse-btn" onClick={toggleSidebar}>
             {sidebarCollapsed ? '»' : '«'}
           </button>
@@ -106,9 +159,9 @@ function App() {
           </div>
         </div>
 
-        <div className="content-wrapper">
+        <div className="content-wrapper" ref={contentWrapperRef} onMouseDown={handleContentMouseDown}>
           {/* Query Section - Now Full Width */}
-          <div className="query-section-full">
+          <div className="query-section-full" style={{ width: assistantPanelWidth }}>
             <div className="query-tabs">
               <button 
                 className={`query-tab ${activeTab === 'assistant' ? 'active' : ''}`}
@@ -223,6 +276,15 @@ function App() {
             )}
           </div>
 
+          {/* Hint icon shown only while resizing; overlays the separator without changing layout */}
+          {showResizerHint && (
+            <div
+              className="resizer-hint"
+              style={{ left: resizerHintLeft }}
+              aria-hidden="true"
+            />
+          )}
+
           {/* Chat Panel */}
           <div className="chat-panel">
             {/* Chat Tabs (match assistant tabs styling/height/position) */}
@@ -306,6 +368,10 @@ function App() {
 
             <div className="message-input-container">
               <div className="input-with-attachment">
+                    {/* Subject field to the right of the bot icon */}
+                    <div className="subject-container">
+                      <input type="text" className="subject-input" placeholder="Subject" />
+                    </div>
                     <div className="icon-strip-cover" aria-hidden="true"></div>
                     <div className="line-left-icon">
                       <span className="bot-mask bot-icon-line" />
