@@ -568,7 +568,7 @@ a {
 
 .message-input-container {
   padding: 15px 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: none;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -602,13 +602,113 @@ a {
   position: relative;
   display: flex;
   align-items: center;
+  border-top: 1px solid #e0e0e0; /* separator same width as input */
+  padding-top: 8px; /* slight spacing below the line */
 }
+
+/* Background strip behind the icon row so bubbles pass behind it */
+.icon-strip-cover {
+  position: absolute;
+  left: -12px; /* slightly extended on the left */
+  right: -64px; /* extended even further on the right */
+  top: -60px; /* keep bar visible while covering more area */
+  height: 54px; /* shortened from bottom; top edge unchanged */
+  background: #f8f9fa; /* same as chat bg */
+  z-index: 1; /* below icons (z-index:2), above bubbles (default) */
+  pointer-events: none;
+}
+
+/* Bot icon overlayed on the separator line (no layout shift) */
+.line-left-icon {
+  position: absolute;
+  left: 3px; /* ~0.8mm total to the right (additional ~0.3mm) */
+  top: 0;
+  transform: translateY(calc(-50% - 23px)); /* move down ~1mm */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bot-icon-line {
+  width: 32px;
+  height: 32px;
+}
+
+/* Right icon at the extreme end of the horizontal line (same height as bot) */
+.line-right-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translateY(calc(-50% - 23px)); /* move down ~1mm */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  height: 32px;
+  z-index: 2; /* on top of line, below nothing interactive */
+  pointer-events: none;
+}
+
+.line-icon-img {
+  width: 28px; /* further 10% smaller */
+  height: 28px; /* further 10% smaller */
+  object-fit: contain;
+}
+
+.phone-icon {
+  width: 25px; /* ~15% smaller than previous size */
+  height: 25px;
+  margin-left: 6px; /* +0.5mm more to the right */
+  margin-top: -2px; /* ~0.5mm up */
+}
+
+/* Email icon as a mask with custom fill color */
+.email-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; /* additional ~15% smaller */
+  height: 26px;
+  border: 1px solid #474C55; /* updated border color */
+  border-radius: 13px; /* scaled down */
+  background: transparent;
+  background-clip: padding-box; /* keep border solid at edges */
+  box-shadow: 0 0 0 1px #474C55 inset; /* reinforce line for consistent color */
+  z-index: 3;
+  overflow: visible; /* allow slight mask overlap under border */
+}
+
+.email-mask {
+  position: relative;
+  display: inline-block;
+  width: 26px; /* match chip, allow overlap */
+  height: 26px;
+  background: #9EC6D2; /* slightly darker than #B6D5DE */
+  -webkit-mask-image: url('./assets/email.png');
+  mask-image: url('./assets/email.png');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 112% 112%; /* keep slight overlap at smaller size */
+  mask-size: 112% 112%;
+  z-index: 2; /* below chip border */
+}
+
+/* Left icon stack for main chat input */
+/* removed input-left-stack/icon styles after reverting UI */
 
 .attachment-btn {
   position: absolute;
-  left: 3px;
+  left: 2px; /* ~0.2mm left */
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(calc(-50% + 4px)); /* nudge ~1mm down */
   background: transparent;
   border: none;
   cursor: pointer;
@@ -622,8 +722,8 @@ a {
 .attachment-icon {
   color: #9ca3af;
   transition: color 0.2s ease;
-  width: 16px !important;
-  height: 16px !important;
+  width: 18px !important; /* ~15% smaller than 21px */
+  height: 18px !important; /* ~15% smaller than 21px */
   display: block;
 }
 
@@ -641,13 +741,14 @@ a {
 
 /* Make assistant area input shorter on the right side */
 .query-section-full .input-with-attachment {
-  flex: 0.9 !important; /* make input container take less space */
+  flex: 1.08 !important; /* make assistant input noticeably wider to the right */
 }
 
 /* Subtle spacing between assistant input and send button */
 .query-section-full .message-input {
-  margin-right: 10px;
-  padding-left: 25px !important; /* only assistant input shifts left */
+  margin-right: 0; /* align input right edge with the bar */
+  width: 100%; /* fill the input-with-attachment width */
+  padding-left: 25px !important; /* keep left padding */
 }
 
 .message-input::placeholder {
@@ -704,7 +805,26 @@ a {
 /* Assistant area only: nudge send button left without affecting input */
 .query-section-full .send-btn-icon {
   position: relative;
-  left: -8px; /* ~2mm */
+  left: -4px; /* tiny move back to the right */
+  top: 6px;  /* bring down ~1.5mm */
+  margin-left: 0;
+}
+
+/* Bring emoji down similarly in assistant area */
+.query-section-full .emoji-btn {
+  position: relative;
+  top: 6px; /* ~1.5mm down */
+}
+
+/* Main chat area: nudge send and emoji down by ~1.5mm */
+.chat-panel .send-btn-icon {
+  position: relative;
+  top: 6px;
+}
+
+.chat-panel .emoji-btn {
+  position: relative;
+  top: 6px;
 }
 
 /* Right Panel - Chat */
@@ -718,10 +838,34 @@ a {
   border: none !important;
 }
 
-/* Reset messages scrollbar to default color; hide arrows and track fill */
-.messages-container { scrollbar-color: auto transparent; }
-.messages-container::-webkit-scrollbar-track { background: transparent; }
-.messages-container::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+/* Custom scrollbar for messages container */
+.messages-container { 
+  scrollbar-color: #9ca3af transparent; 
+  scrollbar-width: thin;
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.messages-container::-webkit-scrollbar-track { 
+  background: transparent; 
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+.messages-container::-webkit-scrollbar-button { 
+  display: none; 
+  width: 0; 
+  height: 0; 
+}
 
 /* Chat tabs use the same styling as query tabs */
 .chat-tabs {
@@ -861,6 +1005,13 @@ a {
   padding: 20px 15px;
   border-left: none !important;
   border: none !important;
+  padding-bottom: 20px; /* reset container padding */
+}
+
+/* Dedicated spacer to guarantee messages stop before bot/line area */
+.messages-bottom-spacer {
+  height: 160px; /* make messages end a bit earlier */
+  flex-shrink: 0;
 }
 
 .messages-container::before,
@@ -938,6 +1089,46 @@ a {
   font-size: 10px;
   font-weight: 600;
 }
+
+/* Avatar stack with bar and tiny email icon */
+.avatar-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center-align stack contents */
+  gap: 3px; /* slight breathing space */
+  margin-right: 6px;
+}
+.avatar-stack.right { margin-left: 6px; margin-right: 0; }
+.avatar-bar {
+  width: 20px; /* align width with avatar/email icons */
+  height: 2px;
+  background: #e0e0e0;
+  border-radius: 2px;
+}
+.avatar-stack .avatar-bar { margin-right: 6px; } /* received: shift bar further left */
+.avatar-stack.right .avatar-bar { margin-right: 0; margin-left: 6px; } /* sent: shift bar further right */
+.email-mini {
+  display: inline-block;
+  width: 24px; /* 20% bigger */
+  height: 24px; /* 20% bigger */
+  background: #9EC6D2;
+  -webkit-mask-image: url('./assets/email.png');
+  mask-image: url('./assets/email.png');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 100% 100%; /* fill icon box for clean edges */
+  mask-size: 100% 100%;
+}
+
+/* Shift only avatar and bar, not the email icon */
+.avatar-stack .message-avatar,
+.avatar-stack .avatar-bar { position: relative; left: -1.2px; }
+.avatar-stack.right .message-avatar-right,
+.avatar-stack.right .avatar-bar { position: relative; left: 1.2px; }
+.avatar-stack .email-mini { transform: translateX(-6px); } /* receiver: shift left */
+.avatar-stack.right .email-mini { transform: translateX(6.05px); } /* sender: +0.05px right */
 
 .message-time {
   font-size: 11px;

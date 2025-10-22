@@ -9,6 +9,9 @@ import logo2 from "./assets/logo2.png";
 import botIcon from "./assets/bot.png";
 import dataIcon from "./assets/Data.png";
 import workflowsIcon from "./assets/Workflows.png";
+import emailIcon from "./assets/email.png";
+import slackIcon from "./assets/slack.png";
+import phoneIcon from "./assets/phone.png";
 
 const client = generateClient<Schema>();
 
@@ -67,7 +70,7 @@ function App() {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <h1>Iris</h1>
+          <h1>Lift</h1>
           <button className="collapse-btn" onClick={toggleSidebar}>
             {sidebarCollapsed ? '»' : '«'}
           </button>
@@ -137,7 +140,9 @@ function App() {
                   </div>
                 </div>
                 <div className="message-input-container">
+                  <div className="input-with-attachment">
                   <input type="text" className="message-input" placeholder="Send a message" />
+                  </div>
                   <button className="send-btn-icon" type="button">
                     <Send className="w-3 h-3" />
                   </button>
@@ -187,7 +192,7 @@ function App() {
                     <div className="chat-item">
                       <div className="chat-avatar">🍽️</div>
                       <div className="chat-details">
-                        <div className="chat-name">James - Restaurant Ltd</div>
+                        <div className="chat-name">James - Restaurant</div>
                         <div className="chat-preview">I sent the receipt</div>
                       </div>
                       <div className="chat-time">9:52pm</div>
@@ -241,7 +246,7 @@ function App() {
             <div className="chat-header">
               <div className="chat-header-left">
                 <div className="chat-avatar">🍽️</div>
-                <div className="chat-title">James - Restaurant Ltd</div>
+                <div className="chat-title">James - Restaurant</div>
               </div>
             </div>
 
@@ -264,7 +269,13 @@ function App() {
                       return (
                         <div key={msg.id} className={`message ${isOutgoing ? 'sent' : 'received'}`}>
                 <div className="message-bubble">
-                            {!isOutgoing && <div className="message-avatar">🍽️</div>}
+                            {!isOutgoing && (
+                              <div className="avatar-stack">
+                                <div className="message-avatar">🍽️</div>
+                                <div className="avatar-bar" />
+                                <span className="email-mini" />
+                              </div>
+                            )}
                             <div>
                               {msg.subject && (
                                 <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '2px' }}>
@@ -276,7 +287,11 @@ function App() {
               </div>
                 </div>
                             {isOutgoing && (
+                              <div className="avatar-stack right">
                               <div className="message-avatar-right">DM</div>
+                                <div className="avatar-bar" />
+                                <span className="email-mini" />
+                              </div>
                             )}
               </div>
                           <div className="message-time">
@@ -286,10 +301,20 @@ function App() {
                       );
                     })
                   )}
+                  <div className="messages-bottom-spacer"></div>
             </div>
 
             <div className="message-input-container">
               <div className="input-with-attachment">
+                    <div className="icon-strip-cover" aria-hidden="true"></div>
+                    <div className="line-left-icon">
+                      <span className="bot-mask bot-icon-line" />
+                    </div>
+                    <div className="line-right-icon">
+                      <img src={phoneIcon} alt="phone" className="line-icon-img phone-icon" />
+                      <img src={slackIcon} alt="slack" className="line-icon-img" />
+                      <span className="email-chip"><span className="email-mask" /></span>
+                    </div>
                     <button className="attachment-btn" type="button">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="attachment-icon">
                         <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
@@ -333,7 +358,7 @@ function App() {
                   <div className="chat-item james-highlight">
                     <div className="chat-avatar">🍽️</div>
                     <div className="chat-details">
-                      <div className="chat-name">James - Restaurant Ltd</div>
+                      <div className="chat-name">James - Restaurant</div>
                       <div className="chat-preview">I sent the receipt</div>
                     </div>
                     <div className="chat-time">9:52pm</div>
