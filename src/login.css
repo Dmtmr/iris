@@ -1,3 +1,146 @@
+/* Sign In only: move Password row (input + toggle) up by 2cm using parent-aware selector */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin]
+  .amplify-field-group:has(input[type="password"], input[name="password"]) {
+  position: relative !important;
+  top: 0.1cm !important; /* moved up by additional 4mm */
+}
+/* Sign In: move the password row (input + show/hide) up by 2cm */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] .amplify-field-group:nth-of-type(2) {
+  position: relative !important;
+  top: -2cm !important;
+}
+/* Sign In: move only the first field group (Enter your email) down by 3cm and neutralize input offsets */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] .amplify-field-group:first-of-type {
+  position: relative !important;
+  top: 3.3cm !important; /* moved down by additional 1mm */
+}
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] .amplify-field-group:first-of-type input[type="email"],
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] .amplify-field-group:first-of-type input[name="username"] {
+  position: static !important;
+  top: auto !important;
+}
+/* Sign In: explicitly keep all other field groups (password, toggle row) unchanged */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] .amplify-field-group:not(:first-of-type) {
+  position: static !important;
+  top: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+/* Sign In only: move the first field group (Enter your email) down by 5cm with high specificity */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] [data-amplify-fieldset] > [data-amplify-field-group]:first-of-type {
+  position: relative !important;
+  top: 5cm !important;
+  margin-top: 0 !important;
+  transform: none !important;
+}
+/* Sign In only: move the "Enter your email" input down by 3cm */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] input[type="email"],
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] input[name="username"] {
+  position: relative !important;
+  top: 5cm !important;
+}
+/* Sign Up: nudge Confirm Password input down by an additional 0.2cm */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup]
+  input[name="confirm_password"],
+[data-amplify-authenticator] form[data-amplify-authenticator-signup]
+  input[name="confirmPassword"] {
+  position: relative !important;
+  top: 0.7cm !important; /* final offset for confirm password */
+}
+
+/* Sign Up: move the Create account submit button down by 0.5cm */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] button[type="submit"] {
+  position: relative !important;
+  top: 1cm !important;
+}
+/* Sign Up: move the "Enter your password" input up by 3cm */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] input[name="password"] {
+  position: relative !important;
+  top: 0.5cm !important; /* moved down by another 0.5cm */
+}
+/* Move the "Enter your email" input up by 3cm on Sign Up only */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] input[type="email"],
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] input[name="username"] {
+  position: relative !important;
+  top: 0.3cm !important; /* moved down by 3mm */
+}
+
+/* Ensure Sign In email/username remain at original position */
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] input[type="email"],
+[data-amplify-authenticator] form[data-amplify-authenticator-signin] input[name="username"] {
+  position: static !important;
+  top: auto !important;
+}
+/* SignUp only: hide the show/hide password toggle (final override) */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] button[data-amplify-password-field-button],
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] .amplify-field__show-password {
+  display: none !important;
+}
+/* SignUp only: hide the show/hide password toggle buttons */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup]
+  .amplify-field-group__outer-end > button.amplify-field__show-password,
+[data-amplify-authenticator] form[data-amplify-authenticator-signup]
+  button[data-amplify-password-field-button] {
+  display: none !important;
+}
+[data-amplify-authenticator] [data-amplify-field-group]:has(input[name="confirm_password"], input[name="confirmPassword"], input[id*="confirm"][type="password"]) {
+  position: relative !important;
+  top: -5cm !important; /* move confirm password field up by 5cm */
+}
+
+[data-amplify-authenticator] [data-amplify-field-group]:has(input[name="confirm_password"], input[name="confirmPassword"], input[id*="confirm"][type="password"]) .amplify-field__show-password {
+  margin-top: -1.4cm !important; /* align eye control with field after 5cm up shift */
+}
+[data-amplify-authenticator] .amplify-button.amplify-field__show-password,
+[data-amplify-authenticator] .amplify-field__show-password {
+  background-color: #f9f9f9 !important; /* match page fill */
+  color: #52525b !important;            /* icon (currentColor) + text */
+  border: none !important;               /* remove border */
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  margin-top: 3.6cm !important;          /* moved down by an extra 0.1cm */
+  margin-left: 3.8cm !important;         /* move an additional 2cm right */
+  box-shadow: none !important;
+  font-size: 14px !important;            /* increased by ~3pt */
+}
+
+[data-amplify-authenticator] .amplify-button.amplify-field__show-password:hover,
+[data-amplify-authenticator] .amplify-field__show-password:hover {
+  background-color: #f0f0f0 !important;
+}
+/* Make the eye icon 20% smaller */
+[data-amplify-authenticator] .amplify-field__show-password .amplify-icon,
+[data-amplify-authenticator] .amplify-field__show-password .amplify-icon svg {
+  width: 1.125em !important;   /* +50% from 0.75em */
+  height: 1.125em !important;  /* +50% from 0.75em */
+}
+[data-amplify-authenticator] div .hidden-note-btn {
+  background-color: transparent !important;
+  color: white !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border: none !important;
+  border-radius: 4px !important;
+}
+
+/* Also style if not under [data-amplify-authenticator] (broader match) */
+.hidden-note-btn {
+  all: unset;
+  display: inline-block;
+  background-color: transparent !important;
+  color: white !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+}
+[data-amplify-authenticator] .hidden-note {
+  display: inline-block;
+  background: transparent !important;
+  color: white !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+}
 /* Iris Core Login Styling - Exact Match */
 
 /* Main Container - Full Screen Split Layout */
@@ -8,11 +151,11 @@
   background: white;
   --amplify-colors-background-primary: white;
   --amplify-colors-background-secondary: white;
-  --amplify-colors-brand-primary-10: #18181b;
-  --amplify-colors-brand-primary-80: #18181b;
+  --amplify-colors-brand-primary-10: transparent;
+  --amplify-colors-brand-primary-80: transparent;
   --amplify-colors-brand-primary-90: #27272a;
-  --amplify-colors-brand-primary-100: #18181b;
-  --amplify-components-button-primary-background-color: #18181b;
+  --amplify-colors-brand-primary-100: transparent;
+  --amplify-components-button-primary-background-color: transparent;
   --amplify-components-button-primary-hover-background-color: #27272a;
 }
 
@@ -114,18 +257,23 @@
 /* Title Container */
 [data-amplify-authenticator] [data-amplify-router-content] > form > div:first-child {
   text-align: center;
+  display: none !important; /* hide header area containing "Sign in" text */
+}
+
+/* Hide fieldset legends like <legend>Sign in</legend> */
+[data-amplify-authenticator] legend {
+  display: none !important;
+  visibility: hidden !important;
+  color: transparent !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Title Styling - exact text-3xl */
 [data-amplify-authenticator] h2,
 [data-amplify-authenticator] [data-amplify-heading] {
-  margin-top: 1.5rem;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-  margin-bottom: 0.5rem;
+  display: none !important; /* hide heading text like "Sign in" */
 }
 
 /* Subtitle - exact text-sm */
@@ -153,6 +301,36 @@
 /* Ensure extra spacing specifically between Email and Password */
 [data-amplify-authenticator] [data-amplify-fieldset] > [data-amplify-field-group]:first-child {
   margin-bottom: 5cm !important; /* enforce 5 cm between email and password */
+  margin-top: 2cm !important; /* move email field down by 2 cm */
+}
+
+/* Move password field down by exactly 1.5 cm */
+[data-amplify-authenticator] [data-amplify-fieldset] > [data-amplify-field-group]:nth-of-type(2) {
+  position: relative;
+  top: 3.5cm !important;
+}
+
+/* Fallback: ensure the password input itself shifts if wrapper selector misses */
+[data-amplify-authenticator] input[name="password"],
+[data-amplify-authenticator] input[type="password"],
+[data-amplify-authenticator] input[type="text"][name="password"] {
+  position: relative;
+  top: 3.5cm !important;
+  margin-left: 4cm !important; /* move password field additional 2cm right */
+}
+
+/* Match password field background to page fill (remove dark/black fill) */
+[data-amplify-authenticator] input[name="password"],
+[data-amplify-authenticator] input[type="password"],
+[data-amplify-authenticator] input[type="text"][name="password"] {
+  background: white !important; /* match email field white fill */
+}
+
+/* Ensure confirm password uses the same white fill */
+[data-amplify-authenticator] input[name="confirm_password"],
+[data-amplify-authenticator] input[name="confirmPassword"],
+[data-amplify-authenticator] input[id*="confirm"][type="password"] {
+  background: white !important;
 }
 
 /* Field Groups - space-y-6 equivalent */
@@ -180,8 +358,17 @@
   line-height: 1.25rem;
   outline: none;
   background: white;
-  color: #18181b;
+  color: #000 !important; /* make input text black */
   box-sizing: border-box;
+}
+
+/* Force email/username field exactly 2cm down */
+[data-amplify-authenticator] input[type="email"],
+[data-amplify-authenticator] input[name="username"],
+[data-amplify-authenticator] input[type="text"][inputmode="email"] {
+  position: relative !important;
+  top: 3.4cm !important; /* moved down an extra 0.4 cm */
+  margin-left: 4cm !important; /* move email/username additional 2cm right */
 }
 
 [data-amplify-authenticator] input::placeholder {
@@ -189,7 +376,7 @@
 }
 
 [data-amplify-authenticator] input:focus {
-  border-color: #18181b;
+  border-color: transparent;
   outline: none;
   box-shadow: none;
 }
@@ -213,10 +400,13 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.15s ease-in-out;
+  position: relative;
+  top: 0.2cm; /* moved up by an extra 0.3cm */
+  margin-left: 4cm !important; /* move Sign In button an additional 2cm right */
 }
 
 [data-amplify-authenticator] button[type="submit"]:hover {
-  background-color: #5a5e66;
+  background-color: #273856 !important; /* dark blue on hover */
 }
 
 [data-amplify-authenticator] button[type="submit"]:disabled {
@@ -239,7 +429,7 @@
 [data-amplify-authenticator] [data-amplify-footer] button {
   background: none;
   border: none;
-  color: #18181b;
+  color: transparent;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -314,3 +504,70 @@
   outline: none !important;
 }
 
+[data-amplify-authenticator] button[data-amplify-password-field-button] {
+  background-color: #f9f9f9 !important;  /* match your form */
+  color: #18181b !important;             /* icon color */
+  border: 1px solid #d4d4d8 !important; /* subtle border */
+  border-radius: 4px !important;
+  padding: 0.25rem !important;
+  cursor: pointer;
+}
+
+/* Move confirm password field up by 5cm (override Amplify) */
+[data-amplify-authenticator] input[name="confirm_password"],
+[data-amplify-authenticator] input[name="confirmPassword"],
+[data-amplify-authenticator] input[id*="confirm"][type="password"] {
+  position: relative !important;
+  top: 0.5cm !important; /* moved down an extra 0.5cm */
+}
+
+/* Move its show-password control up alongside the field */
+[data-amplify-authenticator] input[name="confirm_password"] ~ .amplify-field__show-password,
+[data-amplify-authenticator] input[name="confirmPassword"] ~ .amplify-field__show-password,
+[data-amplify-authenticator] input[id*="confirm"][type="password"] ~ .amplify-field__show-password {
+  position: relative !important;
+  top: -5cm !important; /* move up by 5cm */
+}
+
+/* ===== SignUp-only: anchor and position the show/hide button ===== */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] .amplify-field-group {
+  /* anchor for absolute positioning (SignUp only) */
+  position: relative !important;
+}
+
+/* move the outer-end container to the right inside the field group */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup] .amplify-field-group__outer-end {
+  position: absolute !important;
+  top: 50% !important;
+  right: 0.5rem !important;               /* tweak horizontal offset */
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+}
+
+/* style only the actual button (password + confirm-password) */
+[data-amplify-authenticator] form[data-amplify-authenticator-signup]
+  .amplify-field-group__outer-end > button.amplify-field__show-password[aria-label="Show password"] {
+  margin: 0 !important;
+  padding: 4px !important;
+  background: transparent !important;     /* or set to #f9f9f9 if you want a pill */
+  border: none !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+/* Kill Amplify button ripple/flash on click/focus */
+[data-amplify-authenticator] .amplify-button::after {
+  content: none !important;
+  animation: none !important;
+}
+
+/* Remove any transient box-shadow/transition bursts */
+[data-amplify-authenticator] .amplify-button {
+  box-shadow: none !important;
+  transition: none !important;
+  -webkit-tap-highlight-color: transparent;
+}

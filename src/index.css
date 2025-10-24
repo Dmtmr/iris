@@ -1233,6 +1233,9 @@ a {
   right: 445px; /* shortened ~7cm from the right side (≈265px more) */
   z-index: 2; /* above strip cover, below icons */
 }
+.chat-panel .subject-container {
+  right: calc(445px + 3cm); /* make main chat subject 3cm shorter from the right */
+}
 .subject-input {
   width: 100%;
   border: 1px solid #e0e0e0;
@@ -1665,15 +1668,15 @@ a {
 
   position: absolute;
 
-  right: 0;
+  right: -0.2cm;
 
-  top: 100%;
+  top: calc(100% + 0.2cm);
 
-  background: #F3FAFB; /* blue fill like nav bar */
+  background: #F5F5F5; /* match received bubble */
 
-  border: 1px solid #e0e0e0;
+  border: 1px solid #EEECE1; /* thin bubble border */
 
-  border-radius: 10px;
+  border-radius: 18px; /* match bubble radius */
 
   box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 
@@ -1683,6 +1686,21 @@ a {
 
   z-index: 50;
 
+}
+
+/* Pointy end toward DM avatar (top-right corner) */
+.user-menu::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 14px; /* align tip under avatar area */
+  width: 12px;
+  height: 12px;
+  background: #F5F5F5; /* same as bubble */
+  transform: translateY(-50%) rotate(45deg);
+  border-top: 1px solid #EEECE1; /* match bubble border */
+  border-left: 1px solid #EEECE1;
+  z-index: -1; /* sit under main box edge for seamless join */
 }
 
 
@@ -2532,4 +2550,12 @@ a {
   background: #e0e0e0;
   bottom: -1.2mm; /* moved an extra 0.2mm down */
   pointer-events: none;
+}
+
+/* Subject and body vertical spacing within bubbles (both sent and received) */
+.message-bubble > div > div:first-child[style*="font-weight: 500"] {
+  margin-bottom: -0.2cm; /* subject up by 2mm */
+}
+.message-bubble > div > div:last-child[style*="font-size: 0.95em"] {
+  margin-top: 0.2cm; /* body down by 2mm (moved up 1mm) */
 }
