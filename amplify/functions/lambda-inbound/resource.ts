@@ -15,11 +15,4 @@ export const lambdaInbound = defineFunction({
     SMTP_USERNAME: 'AKIAR4MIHURAJUCRYH55',
     AWS_REGION: 'us-east-1',
   },
-  vpc: {
-    vpcId: 'vpc-0a483b03a3ad5ce23',
-    subnetIds: ['subnet-072b8b66feec6f52c', 'subnet-0ffad26057440a18c'],
-    securityGroupIds: ['sg-063d280bc6cea3919'],
-  },
-  timeout: 120,
-  memory: 1024,
 });
