@@ -1,6 +1,6 @@
 import { Function, Runtime, Code, LayerVersion, Architecture } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
-import { Vpc, SecurityGroup, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { Vpc, SecurityGroup, SubnetType, Subnet } from 'aws-cdk-lib/aws-ec2';
 import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from '../../auth/resource';
@@ -44,7 +44,10 @@ export const lambdaInbound = new Function(backend.stack, 'lambda-comms', {
   }),
   vpcSubnets: {
     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-    subnets: ['subnet-072b8b66feec6f52c', 'subnet-0ffad26057440a18c'],
+    subnets: [
+      Subnet.fromSubnetId(backend.stack, 'Subnet1', 'subnet-072b8b66feec6f52c'),
+      Subnet.fromSubnetId(backend.stack, 'Subnet2', 'subnet-0ffad26057440a18c')
+    ],
   },
   securityGroups: [
     SecurityGroup.fromSecurityGroupId(backend.stack, 'LambdaSecurityGroup', 'sg-063d280bc6cea3919'),
