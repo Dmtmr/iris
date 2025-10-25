@@ -3,7 +3,6 @@ import { defineFunction } from '@aws-amplify/backend';
 export const lambdaInbound = defineFunction({
   name: 'lambda-inbound',
   entry: './src/lambda_function.py',
-  runtime: 'python3.9',
   environment: {
     DB_HOST: 'email-system-cluster.cluster-csxy24404km6.us-east-1.rds.amazonaws.com',
     DB_NAME: 'email_system',
