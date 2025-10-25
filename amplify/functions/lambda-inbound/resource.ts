@@ -1,9 +1,14 @@
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { defineBackend } from '@aws-amplify/backend';
+import { auth } from '../auth/resource';
+import { data } from '../data/resource';
 
-// Create a minimal backend to get the stack reference
-const backend = defineBackend({});
+// Reference the main backend to get the stack
+const backend = defineBackend({
+  auth,
+  data,
+});
 
 // Define the Python Lambda using CDK constructs
 export const lambdaInbound = new Function(backend.stack, 'lambda-inbound', {
