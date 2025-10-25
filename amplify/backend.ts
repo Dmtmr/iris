@@ -2,7 +2,6 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { backend as backendFunction } from './functions/backend/resource';
-import { lambdaInbound } from './functions/lambda-inbound/resource';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Duration } from 'aws-cdk-lib';
 import { HttpMethod, FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda';
@@ -11,7 +10,6 @@ export const backend = defineBackend({
   auth,
   data,
   backendFunction,
-  lambdaInbound,
 });
 
 // Grant permission to invoke Lambda-Inbound
