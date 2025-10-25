@@ -1,7 +1,7 @@
 import { Function, Runtime, Code, LayerVersion, Architecture } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { Vpc, SecurityGroup, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from '../../auth/resource';
 import { data } from '../../data/resource';
@@ -44,7 +44,7 @@ export const lambdaInbound = new Function(backend.stack, 'lambda-comms', {
   }),
   vpcSubnets: {
     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-    subnetIds: ['subnet-072b8b66feec6f52c', 'subnet-0ffad26057440a18c'],
+    subnets: ['subnet-072b8b66feec6f52c', 'subnet-0ffad26057440a18c'],
   },
   securityGroups: [
     SecurityGroup.fromSecurityGroupId(backend.stack, 'LambdaSecurityGroup', 'sg-063d280bc6cea3919'),
@@ -100,6 +100,6 @@ lambdaInbound.addToRolePolicy(new PolicyStatement({
 
 // Add resource-based policy for SES to invoke the Lambda
 lambdaInbound.addPermission('SESInvokePermission', {
-  principal: { service: 'ses.amazonaws.com' },
+  principal: new ServicePrincipal('ses.amazonaws.com'),
   action: 'lambda:InvokeFunction',
 });
