@@ -1,5 +1,5 @@
 {
-  "name": "lambda-inbound",
+  "name": "lambda-comms",
   "version": "1.0.0",
   "description": "Python Lambda function for email processing",
   "main": "index.js",

@@ -20,7 +20,7 @@ const lambdaInvokePolicy = new Policy(
     statements: [
       new PolicyStatement({
         actions: ['lambda:InvokeFunction'],
-        resources: ['arn:aws:lambda:us-east-1:129671603264:function:lambda-inbound'],
+        resources: ['arn:aws:lambda:us-east-1:129671603264:function:lambda-comms'],
       }),
     ],
   }
