@@ -14,5 +14,6 @@ export const lambdaInbound = defineFunction({
     SMTP_PASSWORD: 'AkwoCKgSShGcV0JMRKk+0wlJ3cfeVCXtA1JKIf1GRlH9',
     SMTP_USERNAME: 'AKIAR4MIHURAJUCRYH55',
     AWS_REGION: 'us-east-1',
+    OPENAI_API_KEY: 'random-test-key-12345',
   },
 });
