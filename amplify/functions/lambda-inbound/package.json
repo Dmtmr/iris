@@ -1,0 +1,14 @@
+{
+  "name": "lambda-inbound",
+  "version": "1.0.0",
+  "description": "Python Lambda function for email processing",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build step required for Python'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "typescript": "^5.0.0"
+  }
+}

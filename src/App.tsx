@@ -1,5 +1,6 @@
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import type React from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useMessages } from "./hooks/useMessages";
@@ -9,6 +10,11 @@ import logo2 from "./assets/logo2.png";
 import botIcon from "./assets/bot.png";
 import dataIcon from "./assets/Data.png";
 import workflowsIcon from "./assets/Workflows.png";
+import logoDefault from "./assets/logo-default.png";
+import logoShort from "./assets/logo-short.png";
+import emailIcon from "./assets/email.png";
+import slackIcon from "./assets/slack.png";
+import phoneIcon from "./assets/phone.png";
 
 const client = generateClient<Schema>();
 
@@ -21,6 +27,56 @@ function App() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { messages, loading, error, sendMessage, isConnected } = useMessages();
   const [newMessage, setNewMessage] = useState('');
+  const [assistantPanelWidth, setAssistantPanelWidth] = useState<number>(410);
+  const contentWrapperRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingRef = useRef(false);
+  const [showResizerHint, setShowResizerHint] = useState(false);
+  const [resizerHintLeft, setResizerHintLeft] = useState<number>(assistantPanelWidth);
+  const RESIZE_PAD_LEFT = 14; // px on assistant side
+  const RESIZE_PAD_RIGHT = 33; // px on main chat side (~14px + 5mm)
+
+  const handleResizerMouseDown = () => {
+    isDraggingRef.current = true;
+    setShowResizerHint(true);
+    setResizerHintLeft(assistantPanelWidth);
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', handleResizerMouseMove as any);
+    document.addEventListener('mouseup', handleResizerMouseUp as any);
+  };
+
+  const handleContentMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!contentWrapperRef.current) return;
+    const rect = contentWrapperRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const sep = assistantPanelWidth;
+    const withinLeft = x >= sep - RESIZE_PAD_LEFT && x <= sep;
+    const withinRight = x > sep && x <= sep + RESIZE_PAD_RIGHT;
+    if (withinLeft || withinRight) {
+      handleResizerMouseDown();
+      e.preventDefault();
+    }
+  };
+
+  const handleResizerMouseMove = (e: MouseEvent) => {
+    if (!isDraggingRef.current || !contentWrapperRef.current) return;
+    const rect = contentWrapperRef.current.getBoundingClientRect();
+    let nextWidth = e.clientX - rect.left;
+    const min = 260;
+    const max = Math.max(320, rect.width - 320);
+    if (nextWidth < min) nextWidth = min;
+    if (nextWidth > max) nextWidth = max;
+    setAssistantPanelWidth(nextWidth);
+    setResizerHintLeft(nextWidth);
+  };
+
+  const handleResizerMouseUp = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setShowResizerHint(false);
+    document.body.style.userSelect = '';
+    document.removeEventListener('mousemove', handleResizerMouseMove as any);
+    document.removeEventListener('mouseup', handleResizerMouseUp as any);
+  };
   
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -67,7 +123,7 @@ function App() {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <h1>Iris</h1>
+          <img src={sidebarCollapsed ? logoShort : logoDefault} alt="Lift" className="brand-logo" />
           <button className="collapse-btn" onClick={toggleSidebar}>
             {sidebarCollapsed ? '»' : '«'}
           </button>
@@ -103,9 +159,9 @@ function App() {
           </div>
         </div>
 
-        <div className="content-wrapper">
+        <div className="content-wrapper" ref={contentWrapperRef} onMouseDown={handleContentMouseDown}>
           {/* Query Section - Now Full Width */}
-          <div className="query-section-full">
+          <div className="query-section-full" style={{ width: assistantPanelWidth }}>
             <div className="query-tabs">
               <button 
                 className={`query-tab ${activeTab === 'assistant' ? 'active' : ''}`}
@@ -137,7 +193,9 @@ function App() {
                   </div>
                 </div>
                 <div className="message-input-container">
+                  <div className="input-with-attachment">
                   <input type="text" className="message-input" placeholder="Send a message" />
+                  </div>
                   <button className="send-btn-icon" type="button">
                     <Send className="w-3 h-3" />
                   </button>
@@ -187,7 +245,7 @@ function App() {
                     <div className="chat-item">
                       <div className="chat-avatar">🍽️</div>
                       <div className="chat-details">
-                        <div className="chat-name">James - Restaurant Ltd</div>
+                        <div className="chat-name">James - Restaurant</div>
                         <div className="chat-preview">I sent the receipt</div>
                       </div>
                       <div className="chat-time">9:52pm</div>
@@ -218,6 +276,15 @@ function App() {
             )}
           </div>
 
+          {/* Hint icon shown only while resizing; overlays the separator without changing layout */}
+          {showResizerHint && (
+            <div
+              className="resizer-hint"
+              style={{ left: resizerHintLeft }}
+              aria-hidden="true"
+            />
+          )}
+
           {/* Chat Panel */}
           <div className="chat-panel">
             {/* Chat Tabs (match assistant tabs styling/height/position) */}
@@ -241,7 +308,7 @@ function App() {
             <div className="chat-header">
               <div className="chat-header-left">
                 <div className="chat-avatar">🍽️</div>
-                <div className="chat-title">James - Restaurant Ltd</div>
+                <div className="chat-title">James - Restaurant</div>
               </div>
             </div>
 
@@ -264,7 +331,13 @@ function App() {
                       return (
                         <div key={msg.id} className={`message ${isOutgoing ? 'sent' : 'received'}`}>
                 <div className="message-bubble">
-                            {!isOutgoing && <div className="message-avatar">🍽️</div>}
+                            {!isOutgoing && (
+                              <div className="avatar-stack">
+                                <div className="message-avatar">🍽️</div>
+                                <div className="avatar-bar" />
+                                <span className="email-mini" />
+                              </div>
+                            )}
                             <div>
                               {msg.subject && (
                                 <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '2px' }}>
@@ -276,7 +349,11 @@ function App() {
               </div>
                 </div>
                             {isOutgoing && (
+                              <div className="avatar-stack right">
                               <div className="message-avatar-right">DM</div>
+                                <div className="avatar-bar" />
+                                <span className="email-mini" />
+                              </div>
                             )}
               </div>
                           <div className="message-time">
@@ -286,10 +363,24 @@ function App() {
                       );
                     })
                   )}
+                  <div className="messages-bottom-spacer"></div>
             </div>
 
             <div className="message-input-container">
               <div className="input-with-attachment">
+                    {/* Subject field to the right of the bot icon */}
+                    <div className="subject-container">
+                      <input type="text" className="subject-input" placeholder="Subject" />
+                    </div>
+                    <div className="icon-strip-cover" aria-hidden="true"></div>
+                    <div className="line-left-icon">
+                      <span className="bot-mask bot-icon-line" />
+                    </div>
+                    <div className="line-right-icon">
+                      <img src={phoneIcon} alt="phone" className="line-icon-img phone-icon" />
+                      <img src={slackIcon} alt="slack" className="line-icon-img" />
+                      <span className="email-chip"><span className="email-mask" /></span>
+                    </div>
                     <button className="attachment-btn" type="button">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="attachment-icon">
                         <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
@@ -333,7 +424,7 @@ function App() {
                   <div className="chat-item james-highlight">
                     <div className="chat-avatar">🍽️</div>
                     <div className="chat-details">
-                      <div className="chat-name">James - Restaurant Ltd</div>
+                      <div className="chat-name">James - Restaurant</div>
                       <div className="chat-preview">I sent the receipt</div>
                     </div>
                     <div className="chat-time">9:52pm</div>

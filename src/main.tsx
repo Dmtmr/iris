@@ -31,7 +31,7 @@ function LoginHeader() {
           padding: 0
         }}
       >
-        Create An Account
+        Create an account
       </button>
     </div>
   );
@@ -59,7 +59,7 @@ function SignUpHeader() {
           padding: 0
         }}
       >
-        Back to Login
+        Back to login
       </button>
     </div>
   );
