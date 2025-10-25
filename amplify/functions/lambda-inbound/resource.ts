@@ -1,8 +1,8 @@
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 import { defineBackend } from '@aws-amplify/backend';
-import { auth } from '../auth/resource';
-import { data } from '../data/resource';
+import { auth } from '../../auth/resource';
+import { data } from '../../data/resource';
 
 // Reference the main backend to get the stack
 const backend = defineBackend({
