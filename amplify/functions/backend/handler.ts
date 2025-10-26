@@ -41,7 +41,7 @@ export async function handler(event: any) {
     }
     
     const { action, data } = payload;
-    const lambdaName = process.env.LAMBDA_INBOUND_NAME || 'lambda-inbound';
+    const lambdaName = process.env.LAMBDA_INBOUND_NAME || 'lambda-comms';
 
     console.log('Action:', action);
     console.log('Data:', data);
@@ -60,7 +60,7 @@ export async function handler(event: any) {
 
     switch (action) {
       case 'getMessages':
-        // Invoke Lambda-Inbound to get messages from RDS
+        // Invoke Lambda-comms to get messages from RDS
         console.log('getMessages requested');
         
         const getMessagesPayload = {
@@ -95,10 +95,10 @@ export async function handler(event: any) {
         };
 
       case 'sendMessage':
-        // Invoke Lambda-Inbound to send message
-        console.log('Sending message via Lambda-Inbound:', data);
+        // Invoke Lambda-comms to send message
+        console.log('Sending message via Lambda-comms:', data);
         
-        // Transform to lambda-inbound's expected format
+        // Transform to lambda-comms's expected format
         const sendMessagePayload = {
           to_email: data.destination_emails,
           subject: data.subject || `Message from ${data.source_email}`,

@@ -12,10 +12,10 @@ export const backend = defineBackend({
   backendFunction,
 });
 
-// Grant permission to invoke Lambda-Inbound
+// Grant permission to invoke Lambda-comms
 const lambdaInvokePolicy = new Policy(
   backend.backendFunction.resources.lambda,
-  'InvokeLambdaInboundPolicy',
+  'InvokeLambdaCommsPolicy',
   {
     statements: [
       new PolicyStatement({
