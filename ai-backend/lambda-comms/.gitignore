@@ -1,0 +1,3 @@
+ai-backend/lambda-comms/cdk.out/
+ai-backend/lambda-comms/.cdk.staging/
+ai-backend/lambda-comms/node_modules/
