@@ -1,3 +1,0 @@
-# Lambda Communications
-
-Placeholder
