@@ -17,7 +17,8 @@ export function useMessages() {
         setLoading(true);
       }
       setError(null);
-      const userEmail = user?.signInDetails?.loginId;
+      // Use demo@irispro.xyz which has messages in the database
+      const userEmail = 'demo@irispro.xyz';
       const fetchedMessages = await messageService.getMessages(userEmail);
       setMessages(fetchedMessages);
     } catch (err) {
@@ -27,7 +28,7 @@ export function useMessages() {
         setLoading(false);
       }
     }
-  }, [user?.signInDetails?.loginId]);
+  }, []);
 
   // Send a new message
   const sendMessage = useCallback(async (messageData: SendMessageData) => {

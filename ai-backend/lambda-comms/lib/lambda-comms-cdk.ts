@@ -1,33 +1,52 @@
-import * as cdk from 'aws-cdk-lib';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
+  import * as path from 'path';
+  import * as lambda from 'aws-cdk-lib/aws-lambda';
+  import * as cdk from 'aws-cdk-lib';
+  import * as iam from 'aws-cdk-lib/aws-iam';
+  import * as ec2 from 'aws-cdk-lib/aws-ec2';
+  import { Construct } from 'constructs';
 
-export class LambdaCommsStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+  export class LambdaCommsStack extends cdk.Stack {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+      super(scope, id, props);
 
-    // Attach the same managed policies to the existing role (1:1 with current Lambda)
-    const lambdaRole = iam.Role.fromRoleName(this, 'LambdaRole', 'lambda-ses-new-role');
-    lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
-    lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
-    lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSESFullAccess'));
+      // Attach the same managed policies to the existing role (1:1 with current Lambda)
+      const lambdaRole = iam.Role.fromRoleName(this, 'LambdaRole', 'lambda-ses-new-role');
+      lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+      lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
+      lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSESFullAccess'));
 
-    // Create Lambda function
-    const lambdaFunction = new lambda.Function(this, 'LambdaComms', {
-      functionName: 'lambda-comms',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      handler: 'lambda_comms.lambda_handler',
-      code: lambda.Code.fromAsset('lambda_comms_src'),
-      architecture: lambda.Architecture.ARM_64,
-      role: lambdaRole,
-      layers: [
-        lambda.LayerVersion.fromLayerVersionArn(
-          this, 'Pg8000Layer', 
-          'arn:aws:lambda:us-east-1:129671603264:layer:pg8000-layer:1'
-        )
-      ],
+      const codeAsset = lambda.Code.fromAsset(
+        path.join(__dirname, '../lambda_comms_src'),
+        {
+          bundling: {
+            
+            image: lambda.Runtime.PYTHON_3_9.bundlingImage,
+            command: [
+              'bash', '-c',
+              `
+              # Install dependencies into /asset-output
+              pip install --no-cache-dir -r requirements.txt -t /asset-output && \
+              # Copy only your Lambda source file
+              cp lambda_comms.py /asset-output/
+              `
+            ],
+          },
+        }
+      );
+
+      const lambdaFunction = new lambda.Function(this, 'LambdaComms', {
+        functionName: 'lambda-comms',
+        runtime: lambda.Runtime.PYTHON_3_9,
+        code: codeAsset,
+        handler: 'lambda_comms.lambda_handler',
+        architecture: lambda.Architecture.X86_64,
+        role: lambdaRole,
+        layers: [
+          lambda.LayerVersion.fromLayerVersionArn(
+            this, 'Pg8000Layer', 
+            'arn:aws:lambda:us-east-1:129671603264:layer:pg8000-layer:1'
+          )
+        ],
       timeout: cdk.Duration.minutes(2),
       memorySize: 1024,
       maxEventAge: cdk.Duration.hours(6),
@@ -42,7 +61,7 @@ export class LambdaCommsStack extends cdk.Stack {
         'S3_BUCKET': 'iris-bucket101425',
         'SMTP_PASSWORD': 'AkwoCKgSShGcV0JMRKk+0wlJ3cfeVCXtA1JKIf1GRlH9',
         'SMTP_USERNAME': 'AKIAR4MIHURAJUCRYH55',
-        'OPENAI_API_KEY': 'random-test-key-12345',
+        'OPENAI_API_KEY': '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',
       },
       vpc: ec2.Vpc.fromVpcAttributes(this, 'VPC', {
         vpcId: 'vpc-0a483b03a3ad5ce23',

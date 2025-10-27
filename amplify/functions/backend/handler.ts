@@ -81,10 +81,13 @@ export async function handler(event: any) {
         
         console.log('getMessages response:', getResult);
 
-        // Parse the body if it's a string
+        // The Lambda returns { statusCode: 200, body: '{"messages": [...]}' }
+        // So we need to parse the body string to get the actual messages
         const responseBody = typeof getResult.body === 'string' 
           ? JSON.parse(getResult.body) 
           : getResult.body;
+
+        console.log('Parsed response body:', responseBody);
 
         return {
           statusCode: 200,

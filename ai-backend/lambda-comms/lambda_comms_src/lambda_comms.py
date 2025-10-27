@@ -598,6 +598,38 @@ def handle_get_messages(event):
             connection.close()
             print("Connection closed")
 
+# Embeddings
+
+def test_embedding():
+    """Minimal test to verify embedding functionality works"""
+    try:
+        # Test OpenAI import
+        import openai
+        print("✅ OpenAI import successful")
+        
+        # Test embedding generation
+        test_text = "Test message for embedding"
+        response = openai.embeddings.create(
+            model="text-embedding-3-small",
+            input=test_text
+        )
+        embedding = response.data[0].embedding
+        print(f"✅ Embedding created: {len(embedding)} dimensions")
+        return True
+    except Exception as e:
+        print(f"❌ Embedding test failed: {e}")
+        return False
+
+def handle_test_embedding():
+    """Test endpoint for embedding functionality"""
+    return {
+        'statusCode': 200,
+        'body': {
+            'message': 'Embedding test completed',
+            'success': test_embedding()
+        }
+    }
+
 def lambda_handler(event, context):
     """Main Lambda handler"""
     print("Lambda handler started")
@@ -613,10 +645,13 @@ def lambda_handler(event, context):
         s3_client = boto3.client('s3', region_name=AWS_REGION, config=config)
         print(f"S3 client created for region: {AWS_REGION}")
 
-        # Check for getMessages action FIRST
-        if event.get('action') == 'getMessages':
+        # Check for getMessages action FIRST (support both action and operation)
+        if event.get('action') == 'getMessages' or event.get('operation') == 'get_messages':
             print("Processing getMessages request")
             return handle_get_messages(event)
+        elif event.get('action') == 'testEmbedding':
+            print("Processing testEmbedding request")
+            return handle_test_embedding()
         
         # Determine incoming vs outgoing email
         if 'Records' in event and len(event['Records']) > 0 and event['Records'][0].get('eventSource') == 'aws:ses':
@@ -630,3 +665,4 @@ def lambda_handler(event, context):
         print(f"Error in lambda_handler: {str(e)}")
         traceback.print_exc()
         return {'statusCode': 500, 'body': json.dumps({'error': str(e)})}
+
