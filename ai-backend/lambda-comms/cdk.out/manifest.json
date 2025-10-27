@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::129671603264:role/cdk-hnb659fds-deploy-role-129671603264-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::129671603264:role/cdk-hnb659fds-cfn-exec-role-129671603264-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-129671603264-us-east-1/0df9bf92c806dc57848113531eaf475747188c9474617a3d47dec6caaa1e1152.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-129671603264-us-east-1/f4654fcfd2639566a2d7b1edf5bdc273c9e0c69618888323048963304b78f9a5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,7 @@
         "/LambdaCommsStack/LambdaRole": [
           {
             "type": "aws:cdk:warning",
-            "data": "Can't combine imported IManagedPolicy: arn:${Token[AWS.Partition.6]}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole to imported role IRole: lambda-ses-new-role. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]",
+            "data": "Can't combine imported IManagedPolicy: arn:${Token[AWS.Partition.3]}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole to imported role IRole: lambda-ses-new-role. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]",
             "trace": [
               "Annotations.addMessage (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:2066)",
               "Annotations.addWarningV2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:984)",
@@ -70,7 +70,7 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Can't combine imported IManagedPolicy: arn:${Token[AWS.Partition.6]}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole to imported role IRole: lambda-ses-new-role. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]",
+            "data": "Can't combine imported IManagedPolicy: arn:${Token[AWS.Partition.3]}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole to imported role IRole: lambda-ses-new-role. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]",
             "trace": [
               "Annotations.addMessage (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:2066)",
               "Annotations.addWarningV2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:984)",
@@ -103,7 +103,7 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Can't combine imported IManagedPolicy: arn:${Token[AWS.Partition.6]}:iam::aws:policy/AmazonSESFullAccess to imported role IRole: lambda-ses-new-role. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]",
+            "data": "Can't combine imported IManagedPolicy: arn:${Token[AWS.Partition.3]}:iam::aws:policy/AmazonSESFullAccess to imported role IRole: lambda-ses-new-role. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]",
             "trace": [
               "Annotations.addMessage (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:2066)",
               "Annotations.addWarningV2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:984)",
@@ -157,7 +157,7 @@
               "new ImportedVpc2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:42982)",
               "new ImportedVpc2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\prop-injectable.js:1:681)",
               "Function.fromVpcAttributes (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:12177)",
-              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:66:20)",
+              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:65:20)",
               "Object.<anonymous> (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\bin\\main.ts:7:1)",
               "Module._compile (node:internal/modules/cjs/loader:1706:14)",
               "Module.m._compile (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\ts-node\\src\\index.ts:1618:23)",
@@ -199,7 +199,7 @@
               "new ImportedVpc2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:42982)",
               "new ImportedVpc2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\prop-injectable.js:1:681)",
               "Function.fromVpcAttributes (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:12177)",
-              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:66:20)",
+              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:65:20)",
               "Object.<anonymous> (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\bin\\main.ts:7:1)",
               "Module._compile (node:internal/modules/cjs/loader:1706:14)",
               "Module.m._compile (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\ts-node\\src\\index.ts:1618:23)",
@@ -236,7 +236,7 @@
               "new ImportedSubnet2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\prop-injectable.js:1:681)",
               "Function.fromSubnetAttributes (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:30535)",
               "Function.fromSubnetId (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:30621)",
-              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:77:22)",
+              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:76:22)",
               "Object.<anonymous> (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\bin\\main.ts:7:1)",
               "Module._compile (node:internal/modules/cjs/loader:1706:14)",
               "Module.m._compile (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\ts-node\\src\\index.ts:1618:23)",
@@ -273,7 +273,7 @@
               "new ImportedSubnet2 (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\core\\lib\\prop-injectable.js:1:681)",
               "Function.fromSubnetAttributes (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:30535)",
               "Function.fromSubnetId (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1:30621)",
-              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:78:22)",
+              "new LambdaCommsStack (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\lib\\lambda-comms-cdk.ts:77:22)",
               "Object.<anonymous> (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\bin\\main.ts:7:1)",
               "Module._compile (node:internal/modules/cjs/loader:1706:14)",
               "Module.m._compile (C:\\Users\\Diego\\iris\\ai-backend\\lambda-comms\\node_modules\\ts-node\\src\\index.ts:1618:23)",

@@ -55,7 +55,7 @@
     ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-129671603264-us-east-1",
-     "S3Key": "94e24193558f7f1adb30db11f3b0d7e8d0da3ddb82d3897907e6b289d253ae84.zip"
+     "S3Key": "c965d337fc617a9d966ef63fba7fd4ee7c9f5b7213c2c4e9de7564b450b04a59.zip"
     },
     "Environment": {
      "Variables": {
@@ -67,8 +67,7 @@
       "FROM_EMAIL": "demo@irispro.xyz",
       "S3_BUCKET": "iris-bucket101425",
       "SMTP_PASSWORD": "AkwoCKgSShGcV0JMRKk+0wlJ3cfeVCXtA1JKIf1GRlH9",
-      "SMTP_USERNAME": "AKIAR4MIHURAJUCRYH55",
-      "OPENAI_API_KEY": "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"
+      "SMTP_USERNAME": "AKIAR4MIHURAJUCRYH55"
      }
     },
     "FunctionName": "lambda-comms",
@@ -95,7 +94,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "LambdaCommsStack/LambdaComms/Resource",
-    "aws:asset:path": "asset.94e24193558f7f1adb30db11f3b0d7e8d0da3ddb82d3897907e6b289d253ae84",
+    "aws:asset:path": "asset.c965d337fc617a9d966ef63fba7fd4ee7c9f5b7213c2c4e9de7564b450b04a59",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
