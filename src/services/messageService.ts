@@ -1,10 +1,4 @@
-import { generateClient } from 'aws-amplify/data';
-import { Amplify } from 'aws-amplify';
-import outputs from '../../amplify_outputs.json';
-
-Amplify.configure(outputs);
-
-const client = generateClient();
+// Amplify is configured once in src/main.tsx. Avoid configuring here to prevent runtime errors.
 
 export interface Attachment {
   filename: string;
