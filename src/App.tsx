@@ -1,26 +1,24 @@
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import type React from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+// Removed Amplify Data client usage to avoid requiring GraphQL config locally/prod
 import { useMessages } from "./hooks/useMessages";
 import { Message } from "./services/messageService";
 import { downloadAttachment } from "./services/attachmentService";
 import { Send } from "lucide-react";
-import logo2 from "./assets/logo2.png";
+// import logo2 from "./assets/logo2.png";
 import botIcon from "./assets/bot.png";
 import dataIcon from "./assets/Data.png";
 import workflowsIcon from "./assets/Workflows.png";
 import logoDefault from "./assets/logo-default.png";
 import logoShort from "./assets/logo-short.png";
-import emailIcon from "./assets/email.png";
+// import emailIcon from "./assets/email.png";
 import slackIcon from "./assets/slack.png";
 import phoneIcon from "./assets/phone.png";
 
-const client = generateClient<Schema>();
+ 
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<'assistant' | 'tasks'>('assistant');
   const [activeChatTab, setActiveChatTab] = useState<'conversation' | 'clients'>('conversation');
@@ -79,19 +77,10 @@ function App() {
     document.removeEventListener('mouseup', handleResizerMouseUp as any);
   };
   
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
+  // Amplify Data Todos removed for local compatibility
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
-    
-  function deleteTodo(id: string) {
-    client.models.Todo.delete({ id });
-  }
+  // function createTodo() {}
+  // function deleteTodo(id: string) {}
 
   function toggleSidebar() {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -323,11 +312,6 @@ function App() {
                   ) : (
                     [...messages].reverse().map((msg: Message) => {
                       const isOutgoing = msg.email_type === 'outgoing';
-                      let destinationEmail = msg.destination_emails;
-                      try {
-                        const parsed = JSON.parse(msg.destination_emails);
-                        destinationEmail = Array.isArray(parsed) ? parsed[0] : parsed;
-                      } catch (e) {}
 
                       return (
                         <div key={msg.id} className={`message ${isOutgoing ? 'sent' : 'received'}`}>
