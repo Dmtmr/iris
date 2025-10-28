@@ -350,7 +350,7 @@ function App() {
               </div>
                 </div>
                             {msg.attachments && msg.attachments.length > 0 && (
-                              <div style={{ marginTop: '6px' }}>
+                              <div style={{ marginTop: '4mm', marginLeft: '1.5cm' }}>
                                 {msg.attachments.map((att, idx) => (
                                   <button
                                     key={idx}
@@ -360,14 +360,14 @@ function App() {
                                       display: 'inline-block',
                                       maxWidth: '100%',
                                       textAlign: 'left',
-                                      background: '#eef2ff',
-                                      color: '#3b82f6',
-                                      border: '1px solid #c7d2fe',
+                                      background: '#F5F5F5',
+                                      color: '#6b7280',
+                                      border: '1px solid #e5e7eb',
                                       borderRadius: '6px',
-                                      padding: '6px 10px',
+                                      padding: '4px 8px',
                                       marginBottom: '6px',
                                       cursor: 'pointer',
-                                      fontSize: '0.85em',
+                                      fontSize: '12px',
                                       whiteSpace: 'nowrap',
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis'
