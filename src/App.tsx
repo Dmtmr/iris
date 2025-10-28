@@ -348,36 +348,38 @@ function App() {
                               <div style={{ fontSize: '0.95em', marginBottom: '8px' }}>
                                 {msg.body_text || '[Message content in S3]'}
               </div>
+                              {msg.attachments && msg.attachments.length > 0 && (
+                                <div style={{ marginTop: '4mm', marginLeft: '1.5cm' }}>
+                                  {msg.attachments.map((att, idx) => (
+                                    <a
+                                      key={idx}
+                                      onClick={(e) => { e.preventDefault(); downloadAttachment(att.s3_key, att.filename); }}
+                                      href="#"
+                                      title={`Download ${att.filename}`}
+                                      style={{
+                                        display: 'inline-block',
+                                        maxWidth: '100%',
+                                        textAlign: 'left',
+                                        background: '#F5F5F5',
+                                        color: '#6b7280', /* same gray as unselected tabs */
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '6px',
+                                        padding: '3px 8px',
+                                        marginBottom: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px', /* ~2pt smaller than body */
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        textDecoration: 'none'
+                                      }}
+                                    >
+                                      {att.filename}
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
                 </div>
-                            {msg.attachments && msg.attachments.length > 0 && (
-                              <div style={{ marginTop: '4mm', marginLeft: '1.5cm' }}>
-                                {msg.attachments.map((att, idx) => (
-                                  <button
-                                    key={idx}
-                                    onClick={() => downloadAttachment(att.s3_key, att.filename)}
-                                    title={`Download ${att.filename}`}
-                                    style={{
-                                      display: 'inline-block',
-                                      maxWidth: '100%',
-                                      textAlign: 'left',
-                                      background: '#F5F5F5',
-                                      color: '#6b7280',
-                                      border: '1px solid #e5e7eb',
-                                      borderRadius: '6px',
-                                      padding: '4px 8px',
-                                      marginBottom: '6px',
-                                      cursor: 'pointer',
-                                      fontSize: '12px',
-                                      whiteSpace: 'nowrap',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis'
-                                    }}
-                                  >
-                                    {att.filename}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
                             {isOutgoing && (
                               <div className="avatar-stack right">
                               <div className="message-avatar-right">DM</div>
