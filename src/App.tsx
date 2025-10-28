@@ -348,37 +348,6 @@ function App() {
                               <div style={{ fontSize: '0.95em', marginBottom: '8px' }}>
                                 {msg.body_text || '[Message content in S3]'}
               </div>
-                              {msg.attachments && msg.attachments.length > 0 && (
-                                <div style={{ marginTop: '4mm', marginLeft: '1.5cm' }}>
-                                  {msg.attachments.map((att, idx) => (
-                                    <a
-                                      key={idx}
-                                      onClick={(e) => { e.preventDefault(); downloadAttachment(att.s3_key, att.filename); }}
-                                      href="#"
-                                      title={`Download ${att.filename}`}
-                                      style={{
-                                        display: 'inline-block',
-                                        maxWidth: '100%',
-                                        textAlign: 'left',
-                                        background: '#F5F5F5',
-                                        color: '#6b7280', /* same gray as unselected tabs */
-                                        border: '1px solid #e5e7eb',
-                                        borderRadius: '6px',
-                                        padding: '3px 8px',
-                                        marginBottom: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px', /* ~2pt smaller than body */
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        textDecoration: 'none'
-                                      }}
-                                    >
-                                      {att.filename}
-                                    </a>
-                                  ))}
-                                </div>
-                              )}
                 </div>
                             {isOutgoing && (
                               <div className="avatar-stack right">
@@ -388,9 +357,36 @@ function App() {
                               </div>
                             )}
               </div>
-                          <div className="message-time">
-                            {new Date(msg.created_at).toLocaleString()}
-              </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+                            <span className="message-time">
+                              {new Date(msg.created_at).toLocaleString()}
+                            </span>
+                            {msg.attachments && msg.attachments.length > 0 && (
+                              <span style={{ display: 'inline-flex', gap: '8px', flexWrap: 'wrap' }}>
+                                {msg.attachments.map((att, idx) => (
+                                  <a
+                                    key={idx}
+                                    onClick={(e) => { e.preventDefault(); downloadAttachment(att.s3_key, att.filename); }}
+                                    href="#"
+                                    title={`Download ${att.filename}`}
+                                    style={{
+                                      color: '#6b7280',
+                                      fontWeight: 400,
+                                      fontSize: '12px',
+                                      textDecoration: 'none',
+                                      cursor: 'pointer',
+                                      maxWidth: '220px',
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis'
+                                    }}
+                                  >
+                                    {att.filename}
+                                  </a>
+                                ))}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       );
                     })
