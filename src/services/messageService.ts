@@ -6,6 +6,14 @@ Amplify.configure(outputs);
 
 const client = generateClient();
 
+export interface Attachment {
+  filename: string;
+  s3_key: string;
+  s3_url: string;
+  size: number;
+  content_type: string;
+}
+
 export interface Message {
   id: number;
   message_id: string;
@@ -17,6 +25,7 @@ export interface Message {
   created_at: string;
   subject?: string;
   body_text?: string;
+  attachments?: Attachment[];
 }
 
 export interface SendMessageData {
