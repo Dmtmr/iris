@@ -345,51 +345,51 @@ function App() {
                                   Subject: {msg.subject}
                 </div>
                               )}
-                              <div style={{ fontSize: '0.95em' }}>
+                              <div style={{ fontSize: '0.95em', marginBottom: '8px' }}>
                                 {msg.body_text || '[Message content in S3]'}
               </div>
-                              {msg.attachments && msg.attachments.length > 0 && (
-                                <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e5e7eb' }}>
-                                  <div style={{ fontSize: '0.85em', fontWeight: '500', marginBottom: '4px', color: '#6b7280' }}>
-                                    Attachments ({msg.attachments.length})
-                                  </div>
-                                  {msg.attachments.map((att, idx) => (
-                                    <div 
-                                      key={idx}
-                                      style={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        gap: '6px',
-                                        padding: '6px 8px',
-                                        background: '#f9fafb',
-                                        borderRadius: '4px',
-                                        marginBottom: '4px',
+                </div>
+                            {msg.attachments && msg.attachments.length > 0 && (
+                              <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e5e7eb' }}>
+                                <div style={{ fontSize: '0.85em', fontWeight: '500', marginBottom: '4px', color: '#6b7280' }}>
+                                  Attachments ({msg.attachments.length})
+                                </div>
+                                {msg.attachments.map((att, idx) => (
+                                  <div 
+                                    key={idx}
+                                    style={{ 
+                                      display: 'flex', 
+                                      alignItems: 'center', 
+                                      gap: '6px',
+                                      padding: '6px 8px',
+                                      background: '#f9fafb',
+                                      borderRadius: '4px',
+                                      marginBottom: '4px',
+                                      fontSize: '0.85em'
+                                    }}
+                                  >
+                                    <Paperclip size={14} style={{ color: '#6b7280' }} />
+                                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {att.filename}
+                                    </span>
+                                    <button
+                                      onClick={() => downloadAttachment(att.s3_key, att.filename)}
+                                      style={{
+                                        padding: '4px 8px',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '3px',
+                                        cursor: 'pointer',
                                         fontSize: '0.85em'
                                       }}
                                     >
-                                      <Paperclip size={14} style={{ color: '#6b7280' }} />
-                                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {att.filename}
-                                      </span>
-                                      <button
-                                        onClick={() => downloadAttachment(att.s3_key, att.filename)}
-                                        style={{
-                                          padding: '4px 8px',
-                                          background: '#3b82f6',
-                                          color: 'white',
-                                          border: 'none',
-                                          borderRadius: '3px',
-                                          cursor: 'pointer',
-                                          fontSize: '0.85em'
-                                        }}
-                                      >
-                                        Download
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                </div>
+                                      Download
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             {isOutgoing && (
                               <div className="avatar-stack right">
                               <div className="message-avatar-right">DM</div>
