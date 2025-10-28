@@ -25,7 +25,7 @@ const lambdaInvokePolicy = new Policy(
     ],
   }
 );
-
+// Lambda-comms updated: 2025-10-28 I did at 12.49pm- Attachment embedding integrated
 backend.backendFunction.resources.lambda.role?.attachInlinePolicy(lambdaInvokePolicy);
 
 // Add Function URL for direct invocation from frontend
