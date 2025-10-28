@@ -378,7 +378,11 @@ function App() {
                                       maxWidth: '220px',
                                       whiteSpace: 'nowrap',
                                       overflow: 'hidden',
-                                      textOverflow: 'ellipsis'
+                                      textOverflow: 'ellipsis',
+                                      background: '#EEECE1',
+                                      border: '1px solid #DDD9C3',
+                                      borderRadius: '10px',
+                                      padding: '4px 10px'
                                     }}
                                   >
                                     {att.filename}
