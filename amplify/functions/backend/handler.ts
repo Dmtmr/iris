@@ -128,6 +128,56 @@ export async function handler(event: any) {
           }),
         };
 
+      case 'getAttachmentUrl':
+        // Proxy presigned URL generation to lambda-comms
+        console.log('getAttachmentUrl requested');
+
+        if (!payload.s3_key || typeof payload.s3_key !== 'string') {
+          return {
+            statusCode: 400,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: 'Missing or invalid s3_key' }),
+          };
+        }
+
+        const getUrlPayload = {
+          action: 'getAttachmentUrl',
+          s3_key: payload.s3_key,
+        };
+
+        const getUrlResponse = await lambdaClient.send(
+          new InvokeCommand({
+            FunctionName: lambdaName,
+            Payload: JSON.stringify(getUrlPayload),
+          })
+        );
+
+        const getUrlResult = JSON.parse(
+          new TextDecoder().decode(getUrlResponse.Payload)
+        );
+
+        // lambda-comms returns { statusCode, body } - parse body
+        const getUrlBody = typeof getUrlResult.body === 'string'
+          ? JSON.parse(getUrlResult.body)
+          : getUrlResult.body;
+
+        if (getUrlResult.statusCode !== 200) {
+          return {
+            statusCode: getUrlResult.statusCode || 500,
+            headers: corsHeaders,
+            body: JSON.stringify(getUrlBody || { error: 'Unknown error' }),
+          };
+        }
+
+        return {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({
+            download_url: getUrlBody.download_url,
+            expires_in: getUrlBody.expires_in,
+          }),
+        };
+
       default:
         return {
           statusCode: 400,
