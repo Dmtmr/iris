@@ -7,6 +7,7 @@ export const backend = defineFunction({
   timeoutSeconds: 30,
   environment: {
     LAMBDA_INBOUND_NAME: 'lambda-comms', // Name of your new CDK Lambda
+    APP_RUNNER_URL: 'https://xhaxmqkkrn.us-east-1.awsapprunner.com',
   },
 });
 

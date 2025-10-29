@@ -59,6 +59,59 @@ export async function handler(event: any) {
     }
 
     switch (action) {
+      case 'orchestrateQuery': {
+        const url = (process.env.APP_RUNNER_URL || '').trim().replace(/\/$/, '');
+        if (!url) {
+          return {
+            statusCode: 500,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: 'APP_RUNNER_URL not configured' }),
+          };
+        }
+
+        const { client_id, message_id, query, top_k } = payload;
+        if (!client_id || !message_id || !query) {
+          return {
+            statusCode: 400,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: 'client_id, message_id and query are required' }),
+          };
+        }
+
+        // Use fetch with a 20s timeout
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), 20000);
+        try {
+          const resp = await fetch(`${url}/orchestrateQuery`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client_id, message_id, query, top_k: top_k ?? 5 }),
+            signal: controller.signal as any,
+          } as any);
+          clearTimeout(t);
+          if (!resp.ok) {
+            const text = await resp.text().catch(() => '');
+            return {
+              statusCode: resp.status,
+              headers: corsHeaders,
+              body: JSON.stringify({ error: 'AppRunner request failed', status: resp.status, body: text }),
+            };
+          }
+          const data = await resp.json();
+          return {
+            statusCode: 200,
+            headers: corsHeaders,
+            body: JSON.stringify({ client_id, message_id, query, top_k: top_k ?? 5, ...data }),
+          };
+        } catch (e) {
+          clearTimeout(t);
+          return {
+            statusCode: 504,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: 'AppRunner request timeout or network error', details: (e as Error).message }),
+          };
+        }
+      }
       case 'getMessages':
         // Invoke Lambda-comms to get messages from RDS
         console.log('getMessages requested');
