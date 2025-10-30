@@ -155,15 +155,14 @@ function App() {
     setActiveTab(tab);
   }
 
-  async function handleSendMessage(customMessage?: string) {
-    const messageToSend = customMessage || newMessage;
-    if (!messageToSend.trim() || !user) return;
+  async function handleSendMessage() {
+    if (!newMessage.trim() || !user) return;
 
     try {
       await sendMessage({
         source_email: user.signInDetails?.loginId || 'user@irispro.co',
         destination_emails: 'iris24ai@gmail.com',
-        content: messageToSend,
+        content: newMessage,
         email_type: 'chat',
         subject: `Message from ${user.signInDetails?.loginId || 'user@irispro.co'}`
       });
@@ -173,13 +172,25 @@ function App() {
     }
   }
 
-  function handleReplyConfirmation(answerText: string) {
+  async function handleReplyConfirmation(answerText: string) {
     // Populate message box and auto-send
     setNewMessage(answerText);
     // Small delay to allow UI to update, then send
-    setTimeout(() => {
-      handleSendMessage(answerText);
-    }, 100);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    if (!answerText.trim() || !user) return;
+    
+    try {
+      await sendMessage({
+        source_email: user.signInDetails?.loginId || 'demo@irispro.xyz',
+        destination_emails: 'iris24ai@gmail.com',
+        content: answerText,
+        email_type: 'chat',
+        subject: `Message from ${user.signInDetails?.loginId || 'demo@irispro.xyz'}`
+      });
+      setNewMessage('');
+    } catch (error) {
+      console.error('Failed to send reply:', error);
+    }
   }
   
   
