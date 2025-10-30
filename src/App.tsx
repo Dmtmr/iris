@@ -160,11 +160,11 @@ function App() {
 
     try {
       await sendMessage({
-        source_email: user.signInDetails?.loginId || 'user@irispro.co',
+        source_email: 'demo@irispro.xyz',
         destination_emails: 'iris24ai@gmail.com',
         content: newMessage,
         email_type: 'chat',
-        subject: `Message from ${user.signInDetails?.loginId || 'user@irispro.co'}`
+        subject: `Message from demo@irispro.xyz`
       });
       setNewMessage('');
     } catch (error) {
@@ -181,11 +181,11 @@ function App() {
     
     try {
       await sendMessage({
-        source_email: user.signInDetails?.loginId || 'demo@irispro.xyz',
+        source_email: 'demo@irispro.xyz',
         destination_emails: 'iris24ai@gmail.com',
         content: answerText,
         email_type: 'chat',
-        subject: `Message from ${user.signInDetails?.loginId || 'demo@irispro.xyz'}`
+        subject: `Message from demo@irispro.xyz`
       });
       setNewMessage('');
     } catch (error) {
