@@ -1621,6 +1621,29 @@ a {
   height: 0; 
 }
 
+.tasks-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.tasks-list::-webkit-scrollbar-track { 
+  background: transparent; 
+}
+
+.tasks-list::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 3px;
+}
+
+.tasks-list::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+.tasks-list::-webkit-scrollbar-button { 
+  display: none; 
+  width: 0; 
+  height: 0; 
+}
+
 
 /* Chat tabs use the same styling as query tabs */
 
@@ -2212,7 +2235,7 @@ a {
 
   border-radius: 8px;
 
-  border-left: 3px solid #4285f4;
+  border-left: 3px solid #DDD9C3;
 
   transition: background 0.2s;
 

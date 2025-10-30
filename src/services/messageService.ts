@@ -135,6 +135,42 @@ class MessageService {
     }
   }
 
+  async orchestrateQuery(params: { client_id: string; message_id: string; query: string; top_k?: number }): Promise<any> {
+    try {
+      const response = await fetch(this.functionUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'orchestrateQuery', ...params }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      try {
+        const task = {
+          id: result?.task?.id || `task_${params.message_id}`,
+          client_id: params.client_id,
+          message_id: params.message_id,
+          created_at: new Date().toISOString(),
+          requires_data: !!result?.requires_data,
+          answer: result?.answer || result?.task?.answer || '',
+          classification: result?.classification || {},
+        } as any;
+        const g: any = globalThis as any;
+        if (!g.__aiTasks) g.__aiTasks = [];
+        g.__aiTasks.push(task);
+        try {
+          const evt = new CustomEvent('ai-task', { detail: task });
+          window.dispatchEvent(evt);
+        } catch {}
+      } catch {}
+      return result;
+    } catch (err) {
+      console.error('orchestrateQuery failed:', err);
+      return null; // fail-soft
+    }
+  }
+
   async sendMessage(messageData: SendMessageData): Promise<Message> {
     try {
       console.log('sendMessage called with:', messageData);

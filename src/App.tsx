@@ -1,8 +1,9 @@
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type React from "react";
 // Removed Amplify Data client usage to avoid requiring GraphQL config locally/prod
 import { useMessages } from "./hooks/useMessages";
+import { messageService as __messageService } from "./services/messageService";
 import { Message } from "./services/messageService";
 import { downloadAttachment } from "./services/attachmentService";
 import { Send } from "lucide-react";
@@ -17,6 +18,22 @@ import slackIcon from "./assets/slack.png";
 import phoneIcon from "./assets/phone.png";
 
  
+const TASKS_KEY = 'iris_ai_tasks_v1';
+
+function loadTasksFromStorage(): any[] {
+  try {
+    const raw = localStorage.getItem(TASKS_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTasksToStorage(tasks: any[]) {
+  try { localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); } catch {}
+}
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -25,6 +42,54 @@ function App() {
   const { signOut, user } = useAuthenticator();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { messages, loading, error, sendMessage, isConnected } = useMessages();
+  const [aiTasks, setAiTasks] = useState<any[]>(() => (globalThis as any).__aiTasks || loadTasksFromStorage());
+  const seenTaskKeysRef = useRef<Set<string>>(new Set());
+  // Expose messageService for DevTools-driven testing (fail-soft)
+  if (typeof window !== 'undefined') {
+    try { (window as any).messageService = __messageService; } catch {}
+  }
+  // attach task listener on mount and hydrate from storage/global (dedupe by task.id/id/message_id)
+  useEffect(() => {
+    try {
+      if (aiTasks.length === 0) {
+        const stored = loadTasksFromStorage();
+        const existing = (globalThis as any).__aiTasks || [];
+        
+        // Merge and deduplicate
+        const allTasks = [...stored, ...existing];
+        const seen = new Set();
+        const unique = allTasks.filter(t => {
+          const k = t?.task?.id || t?.id || t?.message_id;
+          if (!k || seen.has(k)) return false;
+          seen.add(k);
+          seenTaskKeysRef.current.add(k);
+          return true;
+        });
+        
+        if (unique.length > 0) {
+          setAiTasks(unique);
+          (globalThis as any).__aiTasks = unique;
+        }
+      }
+    } catch {}
+
+    const handler = (e: any) => {
+      const incoming = e?.detail;
+      const k = (incoming?.task?.id) || incoming?.id || incoming?.message_id;
+      if (k && seenTaskKeysRef.current.has(k)) {
+        return; // skip duplicate
+      }
+      if (k) seenTaskKeysRef.current.add(k);
+      setAiTasks((prev) => {
+        const next = [...prev, incoming];
+        try { (globalThis as any).__aiTasks = next; } catch {}
+        try { saveTasksToStorage(next); } catch {}
+        return next;
+      });
+    };
+    try { window.addEventListener('ai-task', handler as EventListener); } catch {}
+    return () => { try { window.removeEventListener('ai-task', handler as EventListener); } catch {} };
+  }, []);
   const [newMessage, setNewMessage] = useState('');
   const [assistantPanelWidth, setAssistantPanelWidth] = useState<number>(410);
   const contentWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -90,14 +155,15 @@ function App() {
     setActiveTab(tab);
   }
 
-  async function handleSendMessage() {
-    if (!newMessage.trim() || !user) return;
+  async function handleSendMessage(customMessage?: string) {
+    const messageToSend = customMessage || newMessage;
+    if (!messageToSend.trim() || !user) return;
 
     try {
       await sendMessage({
         source_email: user.signInDetails?.loginId || 'user@irispro.co',
         destination_emails: 'iris24ai@gmail.com',
-        content: newMessage,
+        content: messageToSend,
         email_type: 'chat',
         subject: `Message from ${user.signInDetails?.loginId || 'user@irispro.co'}`
       });
@@ -105,6 +171,15 @@ function App() {
     } catch (error) {
       console.error('Failed to send message:', error);
     }
+  }
+
+  function handleReplyConfirmation(answerText: string) {
+    // Populate message box and auto-send
+    setNewMessage(answerText);
+    // Small delay to allow UI to update, then send
+    setTimeout(() => {
+      handleSendMessage(answerText);
+    }, 100);
   }
   
   
@@ -151,7 +226,7 @@ function App() {
 
         <div className="content-wrapper" ref={contentWrapperRef} onMouseDown={handleContentMouseDown}>
           {/* Query Section - Now Full Width */}
-          <div className="query-section-full" style={{ width: assistantPanelWidth }}>
+          <div className="query-section-full" style={{ width: assistantPanelWidth }} key={activeTab}>
             <div className="query-tabs">
               <button 
                 className={`query-tab ${activeTab === 'assistant' ? 'active' : ''}`}
@@ -170,6 +245,7 @@ function App() {
 
             {activeTab === 'assistant' ? (
               <>
+                {console.log('🔵 RENDERING ASSISTANT TAB')}
                 <div className="query-content">
                   <div className="query-header">Query anything</div>
                   <div className="query-input-wrapper">
@@ -193,33 +269,129 @@ function App() {
               </>
             ) : activeTab === 'tasks' ? (
               <>
+                {console.log('🟢 RENDERING TASKS TAB, aiTasks length:', aiTasks.length)}
                 <div className="query-content">
                   <div className="query-header">Active Tasks</div>
-                  <div className="tasks-list">
-                    <div className="task-item">
-                      <div className="task-icon">📋</div>
-                      <div className="task-content">
-                        <div className="task-title">Review Q4 Reports</div>
-                        <div className="task-time">Due: Tomorrow</div>
+                  <div className="tasks-list" style={{ maxHeight: 'calc(100vh - 260px)', overflowY: 'auto' }}>
+                    {aiTasks.length === 0 ? (
+                      <div style={{ color: '#6b7280', fontSize: '0.95em' }}>No tasks yet.</div>
+                    ) : (
+                      [...aiTasks].reverse().map((t, index) => {
+                        const createdAt = t.created_at ? new Date(t.created_at).toLocaleString() : new Date().toLocaleString();
+                        const service = t.classification?.service || 'Bookkeeping';
+                        const titleLeft = `James - Restaurant`;
+                        const badge = t.requires_data ? 'Data' : 'Direct';
+                        const taskId = t.task?.id || t.id || t.message_id || `task-${index}-${Date.now()}`;
+                        const expanded = (globalThis as any).__expandedTaskIds?.has?.(taskId) || false;
+                        return (
+                          <div key={taskId} className="task-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                              <div className="task-content" style={{ flex: 1 }}>
+                                <div className="task-title" style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                  <span style={{ fontWeight: 600, fontSize: '18px' }}>{titleLeft}</span>
+                                  <span style={{ fontSize: '12px', fontWeight: 400, color: '#404040' }}>{createdAt}</span>
+                                </div>
+                                <div className="task-time" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                                  {/* Show friendly tags (exclude service since it is in the title) */}
+                                  {service && (
+                                    <span style={{ background: '#EAF3FF', border: '1px solid #D6E4FF', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                                      {service}
+                                    </span>
+                                  )}
+                                  {t.classification?.workflow && (
+                                    <span style={{ background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                                      {t.classification.workflow}
+                                    </span>
+                                  )}
+                                  {t.classification?.work_item && String(t.classification.work_item).trim().toLowerCase() !== 'data retrieval'.toLowerCase() && (
+                                    <span style={{ background: '#EEF2FF', border: '1px solid #E0E7FF', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                                      {t.classification.work_item}
+                                    </span>
+                                  )}
+                                  {typeof t.classification?.human_need === 'boolean' && (
+                                    <span style={{ background: '#ECFDF5', border: '1px solid #D1FAE5', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                                      {t.classification.human_need ? 'Human needed' : 'No human needed'}
+                                    </span>
+                                  )}
+                                  {t.classification?.task_type && 
+                                    String(t.classification.task_type).trim().toLowerCase() !== 'summarize_message' &&
+                                    String(t.classification.task_type).trim().toLowerCase() !== 'retrieve_data' && (
+                                    <span style={{ background: '#FDF2F8', border: '1px solid #FCE7F3', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                                      {t.classification.task_type}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                                <div className="task-status" title={badge}>{t.requires_data ? 'RAG' : 'Direct'}</div>
+                                {t.classification?.human_task && (
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const answerText = t.answer || '';
+                                      if (answerText) {
+                                        handleReplyConfirmation(answerText);
+                                      }
+                                    }}
+                                    style={{
+                                      background: '#EEECE1',
+                                      border: '1px solid #DDD9C3',
+                                      borderRadius: '12px',
+                                      padding: '2px 8px',
+                                      fontSize: '12px',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background = '#DDD9C3';
+                                      e.currentTarget.style.borderColor = '#C9C5A9';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background = '#EEECE1';
+                                      e.currentTarget.style.borderColor = '#DDD9C3';
+                                    }}
+                                    title="Click to send this answer as a reply"
+                                  >
+                                    {t.classification.human_task}
                       </div>
-                      <div className="task-status">In Progress</div>
+                                )}
                     </div>
-                    <div className="task-item">
-                      <div className="task-icon">📊</div>
-                      <div className="task-content">
-                        <div className="task-title">Update Client Database</div>
-                        <div className="task-time">Due: Friday</div>
                       </div>
-                      <div className="task-status">Pending</div>
+                            {/* Answer box with expand/collapse - spans full width below */}
+                            <div
+                              onClick={() => {
+                                const store = ((globalThis as any).__expandedTaskIds ||= new Set<string>());
+                                if (store.has(taskId)) store.delete(taskId); else store.add(taskId);
+                                // Force re-render
+                                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                                Promise.resolve().then(() => (window as any).dispatchEvent(new Event('resize')));
+                              }}
+                              style={{
+                                marginTop: '8px',
+                                fontSize: '0.90em',
+                                background: '#F2F2F2',
+                                border: '1px solid #EEECE1',
+                                borderRadius: '10px',
+                                padding: '10px 12px',
+                                cursor: 'pointer',
+                                width: '100%'
+                              }}
+                              title={expanded ? 'Click to collapse' : 'Click to expand'}
+                            >
+                              {(() => {
+                                const text = t.answer || '[No answer]';
+                                if (!text) return '[No answer]';
+                                if (expanded) return text;
+                                return text.length > 220 ? (text.slice(0, 220) + '…') : text;
+                              })()}
+                              <div style={{ marginTop: '6px', color: '#6b7280', fontSize: '12px' }}>
+                                {expanded ? 'Collapse' : 'Expand'}
                     </div>
-                    <div className="task-item">
-                      <div className="task-icon">💼</div>
-                      <div className="task-content">
-                        <div className="task-title">Prepare Meeting Notes</div>
-                        <div className="task-time">Due: Today</div>
                       </div>
-                      <div className="task-status">Urgent</div>
                     </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
                 <div className="message-input-container">
