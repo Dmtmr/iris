@@ -47,6 +47,8 @@ function App() {
   const { messages, loading, error, sendMessage, isConnected } = useMessages();
   const [aiTasks, setAiTasks] = useState<any[]>(() => (globalThis as any).__aiTasks || loadTasksFromStorage());
   const seenTaskKeysRef = useRef<Set<string>>(new Set());
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editTagValue, setEditTagValue] = useState<string>('');
   // Expose messageService for DevTools-driven testing (fail-soft)
   if (typeof window !== 'undefined') {
     try { (window as any).messageService = __messageService; } catch {}
@@ -352,27 +354,106 @@ function App() {
                                 </div>
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                                <div 
-                                  className="task-status" 
-                                  style={{
-                                    background: t.autoSent === false ? '#FEE2E2' : '#D1FAE5',
-                                    color: t.autoSent === false ? '#991B1B' : '#065F46',
-                                    padding: '4px 8px',
-                                    borderRadius: '12px',
-                                    fontSize: '11px',
-                                    fontWeight: 500,
-                                    textTransform: 'uppercase'
-                                  }}
-                                  title={t.autoSent === false ? 'Manual approval needed' : 'Reply sent automatically'}
-                                >
-                                  {t.autoSent === false ? 'PENDING' : 'DONE'}
-                                </div>
+                                {editingTaskId === taskId && t.autoSent === false ? (
+                                  <input
+                                    type="text"
+                                    value={editTagValue}
+                                    onChange={(e) => setEditTagValue(e.target.value.toUpperCase())}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        const newValue = editTagValue.trim().toUpperCase();
+                                        if (newValue === 'DONE') {
+                                          // Update task to DONE
+                                          setAiTasks((prev) => {
+                                            const updated = prev.map(task => {
+                                              const taskKey = task?.task?.id || task?.id || task?.message_id;
+                                              if (taskKey === taskId) {
+                                                const updatedTask = { ...task, autoSent: true };
+                                                // Auto-send reply if it has an answer
+                                                if (task.answer && !autoReplySentRef.current.has(taskId)) {
+                                                  autoReplySentRef.current.add(taskId);
+                                                  setTimeout(() => {
+                                                    handleReplyConfirmation(task.answer);
+                                                  }, 100);
+                                                }
+                                                return updatedTask;
+                                              }
+                                              return task;
+                                            });
+                                            try { (globalThis as any).__aiTasks = updated; } catch {}
+                                            try { saveTasksToStorage(updated); } catch {}
+                                            return updated;
+                                          });
+                                        }
+                                        setEditingTaskId(null);
+                                        setEditTagValue('');
+                                      } else if (e.key === 'Escape') {
+                                        setEditingTaskId(null);
+                                        setEditTagValue('');
+                                      }
+                                    }}
+                                    onBlur={() => {
+                                      setEditingTaskId(null);
+                                      setEditTagValue('');
+                                    }}
+                                    autoFocus
+                                    style={{
+                                      background: '#FEE2E2',
+                                      color: '#991B1B',
+                                      padding: '4px 8px',
+                                      borderRadius: '12px',
+                                      fontSize: '11px',
+                                      fontWeight: 500,
+                                      textTransform: 'uppercase',
+                                      border: '2px solid #991B1B',
+                                      width: '60px',
+                                      textAlign: 'center'
+                                    }}
+                                  />
+                                ) : (
+                                  <div 
+                                    className="task-status" 
+                                    onClick={(e) => {
+                                      if (t.autoSent === false) {
+                                        e.stopPropagation();
+                                        setEditingTaskId(taskId);
+                                        setEditTagValue('PENDING');
+                                      }
+                                    }}
+                                    style={{
+                                      background: t.autoSent === false ? '#FEE2E2' : '#D1FAE5',
+                                      color: t.autoSent === false ? '#991B1B' : '#065F46',
+                                      padding: '4px 8px',
+                                      borderRadius: '12px',
+                                      fontSize: '11px',
+                                      fontWeight: 500,
+                                      textTransform: 'uppercase',
+                                      cursor: t.autoSent === false ? 'pointer' : 'default'
+                                    }}
+                                    title={t.autoSent === false ? 'Click to edit (type DONE to mark complete)' : 'Reply sent automatically'}
+                                  >
+                                    {t.autoSent === false ? 'PENDING' : 'DONE'}
+                                  </div>
+                                )}
                                 {!autoReplyEnabled && t.classification?.human_task && t.autoSent === false && (
                                   <div
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       const answerText = t.answer || '';
                                       if (answerText) {
+                                        // Update task to DONE when reply is sent
+                                        setAiTasks((prev) => {
+                                          const updated = prev.map(task => {
+                                            const taskKey = task?.task?.id || task?.id || task?.message_id;
+                                            if (taskKey === taskId) {
+                                              return { ...task, autoSent: true };
+                                            }
+                                            return task;
+                                          });
+                                          try { (globalThis as any).__aiTasks = updated; } catch {}
+                                          try { saveTasksToStorage(updated); } catch {}
+                                          return updated;
+                                        });
                                         handleReplyConfirmation(answerText);
                                       }
                                     }}
