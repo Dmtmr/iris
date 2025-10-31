@@ -145,7 +145,8 @@ export function useMessages() {
       if (processedRef.current.has(id)) return; // already processed across sessions
       const body = m.body_text || '';
       const subject = m.subject || '';
-      if (body.trim().length < 20) return; // skip very short content
+      // Skip only if BOTH subject and body are too short
+      if (subject.trim().length < 10 && body.trim().length < 20) return;
       if (isNoise(subject)) return; // skip DSN/bounce
 
       // Only process messages newer than the watermark (if set)
