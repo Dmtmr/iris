@@ -122,6 +122,7 @@ export function useMessages() {
 
   // Auto-orchestrate for new messages (fail-soft, no blocking UI)
   useEffect(() => {
+    console.log('[AUTO-ORCHESTRATE] useEffect triggered, messages.length:', messages?.length);
     if (!messages || messages.length === 0) return;
 
     const clientId = 'demo@irispro.xyz'; // matches current embeddings usage
@@ -158,7 +159,7 @@ export function useMessages() {
       saveProcessedIds(processedRef.current);
 
       const query = `${subject}\n\n${body.slice(0, 1500)}`.trim();
-      const top_k = 5;
+      const top_k = 15;
 
       // Stagger requests slightly
       setTimeout(() => {
