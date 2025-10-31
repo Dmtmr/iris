@@ -156,9 +156,8 @@ class MessageService {
           answer: result?.answer || result?.task?.answer || '',
           classification: result?.classification || {},
         } as any;
-        const g: any = globalThis as any;
-        if (!g.__aiTasks) g.__aiTasks = [];
-        g.__aiTasks.push(task);
+        // Only dispatch event - don't push to g.__aiTasks directly
+        // The event handler in App.tsx will manage state properly
         try {
           const evt = new CustomEvent('ai-task', { detail: task });
           window.dispatchEvent(evt);

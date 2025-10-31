@@ -46,6 +46,8 @@ export function useMessages() {
   const watermarkRef = useRef<number>(loadWatermark());
 
   // Fetch messages from API
+  // NOTE: This is completely independent of auto-orchestration toggle
+  // Messages are ALWAYS fetched and displayed, regardless of toggle state
   const fetchMessages = useCallback(async (showLoading = false) => {
     try {
       if (showLoading) {
@@ -54,9 +56,12 @@ export function useMessages() {
       setError(null);
       // Use demo@irispro.xyz which has messages in the database
       const userEmail = 'demo@irispro.xyz';
+      console.log('[MESSAGE FETCH] Fetching messages (independent of auto-orchestration toggle)');
       const fetchedMessages = await messageService.getMessages(userEmail);
+      console.log('[MESSAGE FETCH] Received', fetchedMessages?.length || 0, 'messages');
       setMessages(fetchedMessages);
     } catch (err) {
+      console.error('[MESSAGE FETCH] Error:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch messages');
     } finally {
       if (showLoading) {
@@ -121,9 +126,36 @@ export function useMessages() {
   }, [fetchMessages]);
 
   // Auto-orchestrate for new messages (fail-soft, no blocking UI)
+  // NOTE: This only affects TASK CREATION, not message fetching/display.
+  // Messages are fetched and displayed independently via other useEffects above.
   useEffect(() => {
+    // Check if auto-orchestration is enabled
+    try {
+      const enabled = localStorage.getItem('iris_auto_orchestration_enabled');
+      if (enabled === 'false') {
+        console.log('[AUTO-ORCHESTRATE] Disabled by user toggle - tasks will not be created, but messages will still be fetched/displayed');
+        return; // Exit early - this only prevents task creation, not message fetching
+      }
+    } catch {
+      // Default to enabled if can't read localStorage
+    }
+    
     console.log('[AUTO-ORCHESTRATE] useEffect triggered, messages.length:', messages?.length);
     if (!messages || messages.length === 0) return;
+
+    // Double-check toggle is enabled before processing any messages
+    let isEnabled = true;
+    try {
+      const enabled = localStorage.getItem('iris_auto_orchestration_enabled');
+      isEnabled = enabled !== 'false';
+    } catch {
+      isEnabled = true; // default to enabled
+    }
+    
+    if (!isEnabled) {
+      console.log('[AUTO-ORCHESTRATE] Toggle is OFF - not processing any messages for task creation');
+      return; // Exit before processing any messages
+    }
 
     const clientId = 'demo@irispro.xyz'; // matches current embeddings usage
     const isNoise = (subject?: string) => {
@@ -155,15 +187,26 @@ export function useMessages() {
         return;
       }
 
-      // Mark as processed optimistically and persist to avoid duplicate scheduling across refreshes
-      processedRef.current.add(id);
-      saveProcessedIds(processedRef.current);
-
       const query = `${subject}\n\n${body.slice(0, 1500)}`.trim();
       const top_k = 15;
 
       // Stagger requests slightly
       setTimeout(() => {
+        // Check toggle again right before calling orchestrateQuery (in case it changed)
+        try {
+          const enabled = localStorage.getItem('iris_auto_orchestration_enabled');
+          if (enabled === 'false') {
+            console.log('[AUTO-ORCHESTRATE] Skipping', id, '- disabled by user toggle');
+            return; // Don't mark as processed, allow it to be processed later when toggle is on
+          }
+        } catch {
+          // Default to enabled if can't read localStorage
+        }
+        
+        // Mark as processed only when we actually call orchestrateQuery
+        processedRef.current.add(id);
+        saveProcessedIds(processedRef.current);
+        
         messageService
           .orchestrateQuery({ client_id: clientId, message_id: id, query, top_k })
           .then((res) => {
