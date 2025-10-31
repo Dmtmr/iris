@@ -41,6 +41,9 @@ function App() {
   const [activeChatTab, setActiveChatTab] = useState<'conversation' | 'clients'>('conversation');
   const { signOut, user } = useAuthenticator();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showBotMenu, setShowBotMenu] = useState(false);
+  const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
+  const autoReplySentRef = useRef<Set<string>>(new Set());
   const { messages, loading, error, sendMessage, isConnected } = useMessages();
   const [aiTasks, setAiTasks] = useState<any[]>(() => (globalThis as any).__aiTasks || loadTasksFromStorage());
   const seenTaskKeysRef = useRef<Set<string>>(new Set());
@@ -81,7 +84,23 @@ function App() {
       }
       if (k) seenTaskKeysRef.current.add(k);
       setAiTasks((prev) => {
-        const next = [...prev, incoming];
+        // Mark task with auto-send status at creation time
+        const taskWithStatus = {
+          ...incoming,
+          autoSent: autoReplyEnabled
+        };
+        
+        // Auto-send reply if enabled (dedupe by message_id)
+        if (autoReplyEnabled && incoming?.answer && k) {
+          if (!autoReplySentRef.current.has(k)) {
+            autoReplySentRef.current.add(k);
+            setTimeout(() => {
+              handleReplyConfirmation(incoming.answer);
+            }, 500);
+          }
+        }
+        
+        const next = [...prev, taskWithStatus];
         try { (globalThis as any).__aiTasks = next; } catch {}
         try { saveTasksToStorage(next); } catch {}
         return next;
@@ -89,7 +108,7 @@ function App() {
     };
     try { window.addEventListener('ai-task', handler as EventListener); } catch {}
     return () => { try { window.removeEventListener('ai-task', handler as EventListener); } catch {} };
-  }, []);
+  }, [autoReplyEnabled]);
   const [newMessage, setNewMessage] = useState('');
   const [assistantPanelWidth, setAssistantPanelWidth] = useState<number>(410);
   const contentWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -291,7 +310,6 @@ function App() {
                         const createdAt = t.created_at ? new Date(t.created_at).toLocaleString() : new Date().toLocaleString();
                         const service = t.classification?.service || 'Bookkeeping';
                         const titleLeft = `James - Restaurant`;
-                        const badge = t.requires_data ? 'Data' : 'Direct';
                         const taskId = t.task?.id || t.id || t.message_id || `task-${index}-${Date.now()}`;
                         const expanded = (globalThis as any).__expandedTaskIds?.has?.(taskId) || false;
                         return (
@@ -334,8 +352,22 @@ function App() {
                                 </div>
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                                <div className="task-status" title={badge}>{t.requires_data ? 'RAG' : 'Direct'}</div>
-                                {t.classification?.human_task && (
+                                <div 
+                                  className="task-status" 
+                                  style={{
+                                    background: t.autoSent === false ? '#FEE2E2' : '#D1FAE5',
+                                    color: t.autoSent === false ? '#991B1B' : '#065F46',
+                                    padding: '4px 8px',
+                                    borderRadius: '12px',
+                                    fontSize: '11px',
+                                    fontWeight: 500,
+                                    textTransform: 'uppercase'
+                                  }}
+                                  title={t.autoSent === false ? 'Manual approval needed' : 'Reply sent automatically'}
+                                >
+                                  {t.autoSent === false ? 'PENDING' : 'DONE'}
+                                </div>
+                                {!autoReplyEnabled && t.classification?.human_task && t.autoSent === false && (
                                   <div
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -573,7 +605,48 @@ function App() {
                     </div>
                     <div className="icon-strip-cover" aria-hidden="true"></div>
                     <div className="line-left-icon">
-                      <span className="bot-mask bot-icon-line" />
+                      <span 
+                        className="bot-mask bot-icon-line" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowBotMenu(!showBotMenu);
+                        }}
+                        style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                      />
+                      {showBotMenu && (
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            position: 'fixed',
+                            bottom: 'calc(100% + 10px)',
+                            left: '50px',
+                            background: 'white',
+                            border: '1px solid #DDD',
+                            borderRadius: '8px',
+                            padding: '12px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                            zIndex: 10000,
+                            minWidth: '200px',
+                            pointerEvents: 'auto'
+                          }}
+                        >
+                          <label 
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', pointerEvents: 'auto' }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={autoReplyEnabled}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                setAutoReplyEnabled(e.target.checked);
+                              }}
+                              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                            />
+                            <span style={{ pointerEvents: 'auto' }}>Auto-send replies</span>
+                          </label>
+                        </div>
+                      )}
                     </div>
                     <div className="line-right-icon">
                       <img src={phoneIcon} alt="phone" className="line-icon-img phone-icon" />
