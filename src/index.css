@@ -58,7 +58,7 @@
   justify-content: center;
   padding: 20px;
   box-sizing: border-box;
-  background: #EEEEEE;
+  background: #F6F6F5;
 }
 
 .home-tab-image {
@@ -67,7 +67,7 @@
   max-width: none;
   max-height: none;
   object-fit: contain;
-  transform: scale(2.027) translateX(calc(-50% + 10cm));
+  transform: scale(2.97) translateX(calc(-50% + 8.7cm));
   transform-origin: center center;
   margin-left: 50%;
 }
@@ -632,7 +632,7 @@ a {
 
 /* When home page is active, make sure content-wrapper background matches */
 .content-wrapper:has(.home-page) {
-  background: #EEEEEE;
+  background: #F6F6F5;
 }
 
 
