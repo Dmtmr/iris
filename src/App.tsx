@@ -16,6 +16,7 @@ import logoShort from "./assets/logo-short.png";
 // import emailIcon from "./assets/email.png";
 import slackIcon from "./assets/slack.png";
 import phoneIcon from "./assets/phone.png";
+import whatsappIcon from "./assets/whatsapp.png";
 
  
 const TASKS_KEY = 'iris_ai_tasks_v1';
@@ -235,12 +236,20 @@ function App() {
     }
   }
   
-  async function handleReplyConfirmation(answerText: string) {
+  async function handleReplyConfirmation(answerText: string, attachments?: any[]) {
     // Populate message box and auto-send
     setNewMessage(answerText);
     // Small delay to allow UI to update, then send
     await new Promise(resolve => setTimeout(resolve, 100));
     if (!answerText.trim() || !user) return;
+    
+    // Convert task attachments to sendMessage format
+    const messageAttachments = attachments?.map(att => ({
+      filename: att.filename,
+      dataUrl: att.dataUrl,
+      size: att.size,
+      content_type: att.type || att.content_type || 'application/octet-stream'
+    })) || [];
     
     try {
       await sendMessage({
@@ -248,7 +257,8 @@ function App() {
         destination_emails: 'iris24ai@gmail.com',
         content: answerText,
         email_type: 'chat',
-        subject: `Message from demo@irispro.xyz`
+        subject: `Message from demo@irispro.xyz`,
+        attachments: messageAttachments.length > 0 ? messageAttachments : undefined
       });
       setNewMessage('');
     } catch (error) {
@@ -736,7 +746,7 @@ function App() {
                                           try { saveTasksToStorage(updated); } catch {}
                                           return updated;
                                         });
-                                        handleReplyConfirmation(answerText);
+                                        handleReplyConfirmation(answerText, t.attachments);
                                       }
                                     }}
                                     style={{
@@ -1173,7 +1183,7 @@ function App() {
               <div className="input-with-attachment">
                     {/* Subject field to the right of the bot icon */}
                     <div className="subject-container">
-                      <input type="text" className="subject-input" placeholder="Subject" />
+                      <input type="text" className="subject-input" placeholder="Subject: demo@irispro.xyz" />
                     </div>
                     <div className="icon-strip-cover" aria-hidden="true"></div>
                     <div className="line-left-icon">
@@ -1221,6 +1231,7 @@ function App() {
                       )}
                     </div>
                     <div className="line-right-icon">
+                      <img src={whatsappIcon} alt="whatsapp" className="line-icon-img whatsapp-icon" />
                       <img src={phoneIcon} alt="phone" className="line-icon-img phone-icon" />
                       <img src={slackIcon} alt="slack" className="line-icon-img" />
                       <span className="email-chip"><span className="email-mask" /></span>

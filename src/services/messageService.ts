@@ -118,16 +118,33 @@ class MessageService {
       console.log('Has messages?:', 'messages' in result);
       
       // Function URL returns the response directly, not wrapped in statusCode/body
+      let messages: Message[] = [];
+      
       if (result.messages) {
         // Direct response
-        return result.messages;
+        messages = result.messages;
       } else if (result.body) {
         // Wrapped response
         const body = typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
-        return body?.messages || [];
+        messages = body?.messages || [];
       }
       
-      return [];
+      // Filter out "thank you for your email" autoreply messages from frontend
+      const filteredMessages = messages.filter((msg: Message) => {
+        const bodyText = (msg.body_text || '').toLowerCase();
+        const subject = (msg.subject || '').toLowerCase();
+        
+        // Check if message contains "thank you for your email"
+        const isThankYouEmail = 
+          bodyText.includes('thank you for your email') ||
+          bodyText.includes('thank you for your message') ||
+          subject.includes('thank you for your email') ||
+          (bodyText.includes('we received your message') && bodyText.includes('thank you'));
+        
+        return !isThankYouEmail;
+      });
+      
+      return filteredMessages;
       
     } catch (error) {
       console.error('Error fetching messages:', error);

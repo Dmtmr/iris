@@ -1302,6 +1302,13 @@ a {
   object-fit: contain;
 }
 
+.whatsapp-icon {
+  width: 25px; /* same size as phone icon */
+  height: 25px;
+  margin-left: 0px;
+  margin-top: 2px; /* moved down 1mm from -2px */
+}
+
 .phone-icon {
   width: 25px; /* ~15% smaller than previous size */
   height: 25px;
@@ -2510,8 +2517,8 @@ a {
 /* Sidebar-only: separator/tabs down by additional 0.2px */
 .sidebar .sidebar-header { padding-bottom: calc(0.26cm + 6.2px); }
 
-/* Sidebar-only: enlarge logo by 10% without shifting position */
-.sidebar .brand-logo { transform: scale(1.1); transform-origin: top left; }
+/* Sidebar-only: enlarge logo by 124% without shifting position */
+.sidebar .brand-logo { transform: scale(2.2425); transform-origin: top left; }
 
 /* Sidebar: full-height vertical separator to the very top */
 .sidebar { position: relative; }
