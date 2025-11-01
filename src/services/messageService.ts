@@ -29,6 +29,13 @@ export interface SendMessageData {
   email_type: string;
   subject?: string;
   body_html?: string;
+  attachments?: Array<{
+    filename: string;
+    dataUrl?: string;  // base64 data URL for uploading from frontend
+    s3_key?: string;   // S3 key if already uploaded
+    size?: number;
+    content_type?: string;
+  }>;
 }
 
 class MessageService {
