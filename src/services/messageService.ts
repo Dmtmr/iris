@@ -218,27 +218,74 @@ class MessageService {
       const result = await response.json();
       console.log('Send message response:', result);
       
+      let message: Message | null = null;
+      
       // Function URL returns the response directly, not wrapped in statusCode/body
-      if (result.message) {
-        // Direct response
-        return result.message;
+      if (result.message && typeof result.message === 'object' && 'message_id' in result.message) {
+        // Direct response with message object
+        message = result.message as Message;
       } else if (result.body) {
         // Wrapped response
         const body = typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
-        return body?.message;
+        if (body.message && typeof body.message === 'object' && 'message_id' in body.message) {
+          message = body.message as Message;
+        }
+      }
+      
+      // If we got a message from server, ensure it has attachments if provided
+      if (message) {
+        // Ensure email_type is outgoing
+        if (!message.email_type || message.email_type === 'chat') {
+          message.email_type = 'outgoing';
+        }
+        
+        // Ensure subject is set (use from messageData if not in server response)
+        if (!message.subject && messageData.subject) {
+          message.subject = messageData.subject;
+        }
+        
+        // Add fake attachments if provided and not already present
+        if (messageData.attachments && messageData.attachments.length > 0 && (!message.attachments || message.attachments.length === 0)) {
+          console.log('Adding fake attachments to server response message:', messageData.attachments.length);
+          message.attachments = messageData.attachments.map(att => ({
+            filename: att.filename,
+            s3_key: `fake/${Date.now()}/${att.filename}`,
+            s3_url: att.dataUrl || `data:${att.content_type || 'application/octet-stream'};base64,`,
+            size: att.size || 0,
+            content_type: att.content_type || 'application/octet-stream'
+          }));
+        }
+        
+        return message;
       }
       
       // Fallback mock message
-      return {
+      const fallbackMessage: Message = {
         id: Date.now(),
         message_id: `msg_${Date.now()}`,
         timestamp: new Date().toISOString(),
         source_email: messageData.source_email,
         destination_emails: messageData.destination_emails,
         s3_location: '',
-        email_type: messageData.email_type,
+        email_type: 'outgoing', // Always outgoing for sent messages
         created_at: new Date().toISOString(),
+        subject: messageData.subject,
+        body_text: messageData.content,
       };
+      
+      // Add fake attachments if provided
+      if (messageData.attachments && messageData.attachments.length > 0) {
+        console.log('Adding fake attachments to fallback message:', messageData.attachments.length);
+        fallbackMessage.attachments = messageData.attachments.map(att => ({
+          filename: att.filename,
+          s3_key: `fake/${Date.now()}/${att.filename}`,
+          s3_url: att.dataUrl || `data:${att.content_type || 'application/octet-stream'};base64,`,
+          size: att.size || 0,
+          content_type: att.content_type || 'application/octet-stream'
+        }));
+      }
+      
+      return fallbackMessage;
       
     } catch (error) {
       console.error('Error sending message:', error);

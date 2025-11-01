@@ -44,6 +44,34 @@
 
 }
 
+.nav-icon-home {
+
+  margin-top: 0.15cm; /* Move home icon down by 1.5mm */
+
+}
+
+.home-page {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: #EEEEEE;
+}
+
+.home-tab-image {
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  transform: scale(2.027) translateX(calc(-50% + 10cm));
+  transform-origin: center center;
+  margin-left: 50%;
+}
+
 html, body {
 
   margin: 0;
@@ -600,6 +628,11 @@ a {
 
   overflow: hidden;
 
+}
+
+/* When home page is active, make sure content-wrapper background matches */
+.content-wrapper:has(.home-page) {
+  background: #EEEEEE;
 }
 
 
@@ -2519,6 +2552,11 @@ a {
 
 /* Sidebar-only: enlarge logo by 124% without shifting position */
 .sidebar .brand-logo { transform: scale(2.2425); transform-origin: top left; }
+/* Move logo-default up by 2.5mm (only the logo image, not affecting separator/tabs) */
+.sidebar:not(.collapsed) .brand-logo { 
+  transform: translateY(-0.25cm) scale(2.2425); /* Move up 2.5mm while keeping scale */
+  transform-origin: top left;
+}
 
 /* Sidebar: full-height vertical separator to the very top */
 .sidebar { position: relative; }
@@ -2536,6 +2574,8 @@ a {
 
 /* Collapsed sidebar: nudge short logo 3mm to the left */
 .sidebar.collapsed .brand-logo { margin-left: calc(0.68cm - 0.7cm); }
+/* Collapsed sidebar: make logo-short 50% smaller */
+.sidebar.collapsed .brand-logo { transform: scale(1.12125); transform-origin: top left; }
 
 /* Temporary resizer hint (appears only during drag) */
 .resizer-hint {

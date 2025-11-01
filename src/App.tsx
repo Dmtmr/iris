@@ -11,6 +11,8 @@ import { Send } from "lucide-react";
 import botIcon from "./assets/bot.png";
 import dataIcon from "./assets/Data.png";
 import workflowsIcon from "./assets/Workflows.png";
+import homeIcon from "./assets/Home.png";
+import homeTabImage from "./assets/home-tab.png";
 import logoDefault from "./assets/logo-default.png";
 import logoShort from "./assets/logo-short.png";
 // import emailIcon from "./assets/email.png";
@@ -38,6 +40,7 @@ function saveTasksToStorage(tasks: any[]) {
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activeSidebarNav, setActiveSidebarNav] = useState<'home' | 'assistant' | 'data' | 'workflows'>('assistant');
   const [activeTab, setActiveTab] = useState<'assistant' | 'tasks'>('assistant');
   const [activeChatTab, setActiveChatTab] = useState<'conversation' | 'clients'>('conversation');
   const { signOut, user } = useAuthenticator();
@@ -228,7 +231,7 @@ function App() {
         destination_emails: 'iris24ai@gmail.com',
         content: newMessage,
         email_type: 'chat',
-        subject: `Message from demo@irispro.xyz`
+        subject: `Message from diego@irispro.xyz`
       });
       setNewMessage('');
     } catch (error) {
@@ -257,7 +260,7 @@ function App() {
         destination_emails: 'iris24ai@gmail.com',
         content: answerText,
         email_type: 'chat',
-        subject: `Message from demo@irispro.xyz`,
+        subject: `Message from diego@irispro.xyz`,
         attachments: messageAttachments.length > 0 ? messageAttachments : undefined
       });
       setNewMessage('');
@@ -366,15 +369,47 @@ function App() {
           </button>
         </div>
             <nav className="sidebar-nav">
-              <a href="#" className="nav-item active">
+              <a 
+                href="#" 
+                className={`nav-item ${activeSidebarNav === 'home' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSidebarNav('home');
+                }}
+              >
+                <img src={homeIcon} alt="Home" className="nav-icon nav-icon-home" />
+                {!sidebarCollapsed && <span>Home</span>}
+              </a>
+              <a 
+                href="#" 
+                className={`nav-item ${activeSidebarNav === 'assistant' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSidebarNav('assistant');
+                }}
+              >
                 <img src={botIcon} alt="AI Assistant" className="nav-icon nav-icon-bot" />
                 {!sidebarCollapsed && <span>AI Assistant</span>}
               </a>
-              <a href="#" className="nav-item nav-item-data">
+              <a 
+                href="#" 
+                className={`nav-item nav-item-data ${activeSidebarNav === 'data' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSidebarNav('data');
+                }}
+              >
                 <img src={dataIcon} alt="Data hub" className="nav-icon nav-icon-data" />
                 {!sidebarCollapsed && <span>Data hub</span>}
               </a>
-              <a href="#" className="nav-item">
+              <a 
+                href="#" 
+                className={`nav-item ${activeSidebarNav === 'workflows' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSidebarNav('workflows');
+                }}
+              >
                 <img src={workflowsIcon} alt="AI Workflows" className="nav-icon nav-icon-workflows" />
                 {!sidebarCollapsed && <span>AI Workflows</span>}
               </a>
@@ -385,7 +420,7 @@ function App() {
       {/* Main Content */}
       <div className="main-content">
         <div className="main-header">
-          <h2>AI Assistant</h2>
+          <h2>{activeSidebarNav === 'home' ? 'Home' : 'AI Assistant'}</h2>
           <div className="user-menu-container">
             <div className="user-avatar" onClick={() => setShowUserMenu((v) => !v)} title="Account">DM</div>
             {showUserMenu && (
@@ -430,7 +465,22 @@ function App() {
         </div>
 
         <div className="content-wrapper" ref={contentWrapperRef} onMouseDown={handleContentMouseDown}>
-          {/* Query Section - Now Full Width */}
+          {activeSidebarNav === 'home' ? (
+            <div className="home-page" style={{ width: assistantPanelWidth }}>
+              <img 
+                src={homeTabImage} 
+                alt="Home" 
+                className="home-tab-image"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+              />
+            </div>
+          ) : (
+          /* Query Section - Now Full Width */
           <div className="query-section-full" style={{ width: assistantPanelWidth }} key={activeTab}>
             <div className="query-tabs">
               <button 
@@ -1062,6 +1112,7 @@ function App() {
               </>
             )}
           </div>
+          )}
 
           {/* Hint icon shown only while resizing; overlays the separator without changing layout */}
           {showResizerHint && (
@@ -1072,7 +1123,8 @@ function App() {
             />
           )}
 
-          {/* Chat Panel */}
+          {/* Chat Panel - only show when not on home page */}
+          {activeSidebarNav !== 'home' && (
           <div className="chat-panel">
             {/* Chat Tabs (match assistant tabs styling/height/position) */}
             <div className="chat-tabs query-tabs">
@@ -1121,9 +1173,9 @@ function App() {
                               </div>
                             )}
                             <div>
-                              {msg.subject && (
-                                <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '2px' }}>
-                                  Subject: {msg.subject}
+                              {(msg.subject || (isOutgoing && msg.source_email)) && (
+                                <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '4px', color: '#666' }}>
+                                  {msg.subject || `Message from ${msg.source_email}`}
                 </div>
                               )}
                               <div style={{ fontSize: '0.95em', marginBottom: '8px' }}>
@@ -1147,7 +1199,23 @@ function App() {
                                 {msg.attachments.map((att, idx) => (
                                   <a
                                     key={idx}
-                                    onClick={(e) => { e.preventDefault(); downloadAttachment(att.s3_key, att.filename); }}
+                                    onClick={(e) => { 
+                                      e.preventDefault(); 
+                                      // Handle fake attachments (UI-only) with dataUrl
+                                      if (att.s3_key && att.s3_key.startsWith('fake/') && att.s3_url) {
+                                        // Fake attachment - download from dataUrl
+                                        const link = document.createElement('a');
+                                        link.href = att.s3_url;
+                                        link.download = att.filename;
+                                        link.style.display = 'none';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                      } else if (att.s3_key) {
+                                        // Real attachment - download from S3
+                                        downloadAttachment(att.s3_key, att.filename);
+                                      }
+                                    }}
                                     href="#"
                                     title={`Download ${att.filename}`}
                                     style={{
@@ -1183,7 +1251,7 @@ function App() {
               <div className="input-with-attachment">
                     {/* Subject field to the right of the bot icon */}
                     <div className="subject-container">
-                      <input type="text" className="subject-input" placeholder="Subject: demo@irispro.xyz" />
+                      <input type="text" className="subject-input" placeholder="Subject: diego@irispro.xyz" />
                     </div>
                     <div className="icon-strip-cover" aria-hidden="true"></div>
                     <div className="line-left-icon">
@@ -1304,6 +1372,7 @@ function App() {
               </>
             )}
           </div>
+          )}
         </div>
       </div>
       </div>

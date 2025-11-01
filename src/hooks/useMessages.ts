@@ -59,7 +59,155 @@ export function useMessages() {
       console.log('[MESSAGE FETCH] Fetching messages (independent of auto-orchestration toggle)');
       const fetchedMessages = await messageService.getMessages(userEmail);
       console.log('[MESSAGE FETCH] Received', fetchedMessages?.length || 0, 'messages');
-      setMessages(fetchedMessages);
+      
+      // Merge fetched messages with existing ones, preserving fake attachments
+      setMessages(prev => {
+        // Find messages with fake attachments in current state
+        const optimisticMessagesById = new Map<string, Message>();
+        const optimisticMessagesByContent = new Map<string, Message>();
+        
+        prev.forEach(msg => {
+          if (msg.attachments && msg.attachments.some(att => att.s3_key?.startsWith('fake/'))) {
+            optimisticMessagesById.set(msg.message_id, msg);
+            // Create content-based key for matching - normalize the content
+            const bodyText = (msg.body_text || '').trim().substring(0, 100);
+            const contentKey = `${msg.created_at}_${bodyText}`;
+            optimisticMessagesByContent.set(contentKey, msg);
+            console.log('[MESSAGE FETCH] Found optimistic message with attachments:', {
+              id: msg.message_id,
+              contentKey,
+              bodyText: bodyText.substring(0, 30),
+              attachments: msg.attachments.length
+            });
+          }
+        });
+        
+        // If no optimistic messages with attachments, just return fetched messages
+        if (optimisticMessagesById.size === 0) {
+          console.log('[MESSAGE FETCH] No optimistic messages with attachments, returning fetched as-is');
+          return fetchedMessages;
+        }
+        
+        // Track which messages to include in final result
+        const merged: Message[] = [];
+        const includedMessageIds = new Set<string>();
+        const skippedFetchedIds = new Set<string>();
+        
+        // First: Identify all fetched messages that match optimistic ones (by id or content)
+        console.log('[MESSAGE FETCH] Checking', fetchedMessages.length, 'fetched messages against', optimisticMessagesById.size, 'optimistic messages');
+        fetchedMessages.forEach(fetched => {
+          // Try matching by message_id first
+          let matchingOptimistic = optimisticMessagesById.get(fetched.message_id);
+          
+          // If not found, try matching by content (normalize both)
+          if (!matchingOptimistic) {
+            const fetchedBodyText = (fetched.body_text || '').trim().substring(0, 100);
+            const fetchedContentKey = `${fetched.created_at}_${fetchedBodyText}`;
+            matchingOptimistic = optimisticMessagesByContent.get(fetchedContentKey);
+            
+            // Also try matching without exact timestamp match (in case timestamps differ slightly)
+            if (!matchingOptimistic) {
+              optimisticMessagesByContent.forEach((optMsg, contentKey) => {
+                if (contentKey.includes(fetchedBodyText) && fetchedBodyText.length > 20) {
+                  // Content matches, use this optimistic message
+                  matchingOptimistic = optMsg;
+                  console.log('[MESSAGE FETCH] Matched by content text only:', fetched.message_id, '->', optMsg.message_id);
+                }
+              });
+            } else {
+              console.log('[MESSAGE FETCH] Matched fetched', fetched.message_id, 'to optimistic', matchingOptimistic.message_id, 'by exact content key');
+            }
+          } else {
+            console.log('[MESSAGE FETCH] Matched fetched', fetched.message_id, 'to optimistic', matchingOptimistic.message_id, 'by message_id');
+          }
+          
+          if (matchingOptimistic) {
+            // This fetched message matches an optimistic one - skip it
+            skippedFetchedIds.add(fetched.message_id);
+            console.log('[MESSAGE FETCH] ✓ Will skip fetched message', fetched.message_id, '(matches optimistic', matchingOptimistic.message_id, ')');
+          } else {
+            console.log('[MESSAGE FETCH] ✗ No match for fetched message', fetched.message_id, 'body:', (fetched.body_text || '').substring(0, 30));
+          }
+        });
+        
+        // Second: Add all optimistic messages (they have attachments, so we prefer them)
+        optimisticMessagesById.forEach((optimisticMsg, optimisticId) => {
+          if (!includedMessageIds.has(optimisticId)) {
+            console.log('[MESSAGE FETCH] ✓ Adding optimistic message with attachments:', optimisticId);
+            merged.push(optimisticMsg);
+            includedMessageIds.add(optimisticId);
+          }
+        });
+        
+        // Third: Add fetched messages that DON'T match any optimistic message
+        fetchedMessages.forEach(fetched => {
+          if (skippedFetchedIds.has(fetched.message_id)) {
+            console.log('[MESSAGE FETCH] ✗ Skipping fetched message (matches optimistic):', fetched.message_id);
+            return;
+          }
+          
+          if (!includedMessageIds.has(fetched.message_id)) {
+            console.log('[MESSAGE FETCH] ✓ Adding fetched message (no match):', fetched.message_id);
+            merged.push(fetched);
+            includedMessageIds.add(fetched.message_id);
+          }
+        });
+        
+        // Final deduplication: Remove any messages without attachments if there's a matching one with attachments
+        const finalMerged: Message[] = [];
+        const contentSeen = new Map<string, Message>();
+        
+        merged.forEach(msg => {
+          const bodyText = (msg.body_text || '').trim().substring(0, 100);
+          const hasAttachments = msg.attachments && msg.attachments.some(att => att.s3_key?.startsWith('fake/'));
+          const contentKey = bodyText;
+          
+          const existing = contentSeen.get(contentKey);
+          if (existing) {
+            const existingHasAttachments = existing.attachments && existing.attachments.some(att => att.s3_key?.startsWith('fake/'));
+            // If existing has attachments and new one doesn't, keep existing
+            if (existingHasAttachments && !hasAttachments) {
+              console.log('[MESSAGE FETCH] Dedupe: Keeping message with attachments, skipping duplicate without:', msg.message_id);
+              return; // Skip this one
+            }
+            // If new one has attachments and existing doesn't, replace
+            if (!existingHasAttachments && hasAttachments) {
+              console.log('[MESSAGE FETCH] Dedupe: Replacing message without attachments with one that has:', existing.message_id, '->', msg.message_id);
+              const index = finalMerged.indexOf(existing);
+              if (index >= 0) {
+                finalMerged[index] = msg;
+              }
+              contentSeen.set(contentKey, msg);
+              return;
+            }
+            // Both have or both don't have - skip duplicate
+            console.log('[MESSAGE FETCH] Dedupe: Skipping duplicate message:', msg.message_id);
+            return;
+          }
+          
+          // First time seeing this content
+          finalMerged.push(msg);
+          contentSeen.set(contentKey, msg);
+        });
+        
+        // Sort by created_at descending (newest first)
+        finalMerged.sort((a, b) => {
+          const timeA = new Date(a.created_at).getTime();
+          const timeB = new Date(b.created_at).getTime();
+          return timeB - timeA;
+        });
+        
+        console.log('[MESSAGE FETCH] Final result after dedupe:', {
+          before: merged.length,
+          after: finalMerged.length,
+          skippedFetched: skippedFetchedIds.size,
+          optimisticAdded: optimisticMessagesById.size,
+          withAttachments: finalMerged.filter(m => m.attachments?.some(a => a.s3_key?.startsWith('fake/'))).length,
+          withoutAttachments: finalMerged.filter(m => !m.attachments || !m.attachments.some(a => a.s3_key?.startsWith('fake/'))).length
+        });
+        
+        return finalMerged;
+      });
     } catch (err) {
       console.error('[MESSAGE FETCH] Error:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch messages');
