@@ -7,7 +7,7 @@ import { messageService as __messageService } from "./services/messageService";
 import { Message } from "./services/messageService";
 import { downloadAttachment } from "./services/attachmentService";
 import { Send } from "lucide-react";
-// import logo2 from "./assets/logo2.png";
+// import logo2 from "./assets/logo2.png"; check
 import botIcon from "./assets/bot.png";
 import dataIcon from "./assets/Data.png";
 import workflowsIcon from "./assets/Workflows.png";
@@ -1193,7 +1193,7 @@ function App() {
               </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
                             <span className="message-time">
-                              {new Date(msg.created_at).toLocaleString()}
+                              {new Date(msg.created_at).toLocaleDateString()}
                             </span>
                             {msg.attachments && msg.attachments.length > 0 && (
                               <span style={{ display: 'inline-flex', gap: '8px', flexWrap: 'wrap' }}>
