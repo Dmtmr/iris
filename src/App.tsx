@@ -916,7 +916,7 @@ function App() {
                                           const updated = prev.map(task => {
                                             const taskKey = task?.task?.id || task?.id || task?.message_id;
                                             if (taskKey === taskId) {
-                                              return { ...task, answer: editAnswerValue.trim() };
+                                              return { ...task, answer: editAnswerValue };
                                             }
                                             return task;
                                           });
@@ -1014,7 +1014,8 @@ function App() {
                                       padding: '10px 12px',
                                       paddingRight: '40px',
                                       cursor: 'pointer',
-                                      width: '100%'
+                                      width: '100%',
+                                      whiteSpace: 'pre-wrap'
                                     }}
                                     title="Double-click to edit, click to expand/collapse"
                                   >
@@ -1178,7 +1179,7 @@ function App() {
                                   {isOutgoing ? 'Reply' : (msg.subject || `Message from ${msg.source_email}`)}
                 </div>
                               )}
-                              <div style={{ fontSize: '0.95em', marginBottom: '8px' }}>
+                              <div style={{ fontSize: '0.95em', marginBottom: '8px', whiteSpace: 'pre-wrap' }}>
                                 {msg.body_text || '[Message content in S3]'}
               </div>
                 </div>
