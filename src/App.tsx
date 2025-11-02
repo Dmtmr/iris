@@ -231,7 +231,7 @@ function App() {
         destination_emails: 'iris24ai@gmail.com',
         content: newMessage,
         email_type: 'chat',
-        subject: `Message from diego@irispro.xyz`
+        subject: `Reply`
       });
       setNewMessage('');
     } catch (error) {
@@ -260,7 +260,7 @@ function App() {
         destination_emails: 'iris24ai@gmail.com',
         content: answerText,
         email_type: 'chat',
-        subject: `Message from diego@irispro.xyz`,
+        subject: `Reply`,
         attachments: messageAttachments.length > 0 ? messageAttachments : undefined
       });
       setNewMessage('');
@@ -1175,7 +1175,7 @@ function App() {
                             <div>
                               {(msg.subject || (isOutgoing && msg.source_email)) && (
                                 <div style={{ fontWeight: '500', fontSize: '0.9em', marginBottom: '4px', color: '#666' }}>
-                                  {msg.subject || `Message from ${msg.source_email}`}
+                                  {isOutgoing ? 'Reply' : (msg.subject || `Message from ${msg.source_email}`)}
                 </div>
                               )}
                               <div style={{ fontSize: '0.95em', marginBottom: '8px' }}>
@@ -1251,7 +1251,7 @@ function App() {
               <div className="input-with-attachment">
                     {/* Subject field to the right of the bot icon */}
                     <div className="subject-container">
-                      <input type="text" className="subject-input" placeholder="Subject: diego@irispro.xyz" />
+                      <input type="text" className="subject-input" placeholder="Subject: Reply" />
                     </div>
                     <div className="icon-strip-cover" aria-hidden="true"></div>
                     <div className="line-left-icon">
